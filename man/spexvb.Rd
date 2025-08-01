@@ -2,7 +2,7 @@
 % Please edit documentation in R/spexvb.R
 \name{spexvb}
 \alias{spexvb}
-\title{Variational Bayes Posterior Approximation for Sparse Linear Models}
+\title{Parameter Expanded Variational Bayes for Well-Calibrated High-Dimensional Linear Regression with Spike-and-Slab Priors}
 \usage{
 spexvb(
   X,
@@ -59,11 +59,7 @@ inclusion probabilities (\code{omega}), intercept (if applicable), alpha path, c
 }
 \description{
 Fits a sparse linear regression model using variational inference with an alpha expansion step.
-<<<<<<< HEAD
 The model uses spike-and-slab priors.
-=======
-The model uses spike-and-slab priors and allows selection of different C++ backends for fitting.
->>>>>>> 687b6240d2f445f63493fcb11446db939790ef7c
 }
 \details{
 This function acts as a wrapper for various C++ implementations of the SPEVXB algorithm.

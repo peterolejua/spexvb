@@ -1,12 +1,6 @@
-#' Variational Bayes Posterior Approximation for Sparse Linear Models
-#'
-#' Fits a sparse linear regression model using variational inference with an alpha expansion step.
-<<<<<<< HEAD
+#' @title Parameter Expanded Variational Bayes for Well-Calibrated High-Dimensional Linear Regression with Spike-and-Slab Priors
+#' @description Fits a sparse linear regression model using variational inference with an alpha expansion step.
 #' The model uses spike-and-slab priors.
-=======
-#' The model uses spike-and-slab priors and allows selection of different C++ backends for fitting.
->>>>>>> 687b6240d2f445f63493fcb11446db939790ef7c
-#'
 #' @param X A numeric matrix. The design matrix (n observations × p predictors).
 #' @param Y A numeric vector. The response vector of length n.
 #' @param mu Optional numeric vector. Initial variational means for regression coefficients.
