@@ -57,6 +57,7 @@ fit_spexvb <- cv.spexvb.fit(
       mu_alpha = 1, # alpha is N(mu_alpha, (tau_e*tau_alphalpha)^{-1}), known/estimated
       tau_alpha = c(0,10^(3:7)),
       tau_b = 400, # initial. b_j is N(0, (tau_e*tau_b)^{-1}), known/estimated
+      standardize = F,
       intercept = F,
       max_iter = 500L,
       tol = 1e-5,
