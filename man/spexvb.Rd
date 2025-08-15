@@ -7,16 +7,17 @@
 spexvb(
   X,
   Y,
-  mu = NULL,
-  omega = NULL,
-  c_pi = NULL,
-  d_pi = NULL,
+  mu_0 = NULL,
+  omega_0 = NULL,
+  c_pi_0 = NULL,
+  d_pi_0 = NULL,
   tau_e = NULL,
   update_order = NULL,
   mu_alpha = 1,
   tau_alpha = 1000,
   tau_b = 400,
-  intercept = FALSE,
+  standardize = T,
+  intercept = T,
   max_iter = 1000,
   tol = 1e-05,
   seed = 12376
@@ -27,13 +28,13 @@ spexvb(
 
 \item{Y}{A numeric vector. The response vector of length n.}
 
-\item{mu}{Optional numeric vector. Initial variational means for regression coefficients.}
+\item{mu_0}{Optional numeric vector. Initial variational means for regression coefficients.}
 
-\item{omega}{Optional numeric vector. Initial spike probabilities.}
+\item{omega_0}{Optional numeric vector. Initial spike probabilities.}
 
-\item{c_pi}{Optional numeric. Prior Beta(a, b) parameter a for the spike probability.}
+\item{c_pi_0}{Optional numeric. Prior Beta(a, b) parameter a for the spike probability.}
 
-\item{d_pi}{Optional numeric. Prior Beta(a, b) parameter b for the spike probability.}
+\item{d_pi_0}{Optional numeric. Prior Beta(a, b) parameter b for the spike probability.}
 
 \item{tau_e}{Optional numeric. Known or estimated error precision.}
 
@@ -45,7 +46,9 @@ spexvb(
 
 \item{tau_b}{Slab prior precision. Default is 400.}
 
-\item{intercept}{Logical. Whether to include an intercept. Default is FALSE.}
+\item{standardize}{Logical. Center Y, and center and scale X. Default is TRUE.}
+
+\item{intercept}{Logical. Whether to include an intercept. Default is TRUE. After the model is fit on the centered and scaled data, the final coefficients are "unscaled" to put them back on the original scale of your data. The intercept is then calculated separately using the means and the final coefficients.}
 
 \item{max_iter}{Maximum number of iterations for the variational update. Default is 1000.}
 

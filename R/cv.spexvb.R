@@ -1,19 +1,20 @@
-#' @title Cross-validation for Sparse Paramaeter Expanded Variational Bayes (SPEVXB)
+#' @title Cross-validation for Sparse Paramaeter Expanded Variational Bayes (spexvb)
 #' @description Performs k-fold cross-validation for the spexvb model,
 #'   allowing for evaluation of model performance across different tau_alpha values.
 #' @param k Integer, the number of folds for cross-validation. Must be greater than 2.
 #' @param X A design matrix.
 #' @param Y A response vector.
-#' @param mu Initial variational mean (posterior expectation of beta_j | s_j = 1). If NULL, initialized automatically.
-#' @param omega Initial variational probability (posterior expectation of s_j). If NULL, initialized automatically.
-#' @param c_pi Prior parameter for pi (beta distribution shape1). If NULL, initialized automatically.
-#' @param d_pi Prior parameter for pi (beta distribution shape2). If NULL, initialized automatically.
+#' @param mu_0 Initial variational mean (posterior expectation of beta_j | s_j = 1). If NULL, initialized automatically.
+#' @param omega_0 Initial variational probability (posterior expectation of s_j). If NULL, initialized automatically.
+#' @param c_pi_0 Prior parameter for pi (beta distribution shape1). If NULL, initialized automatically.
+#' @param d_pi_0 Prior parameter for pi (beta distribution shape2). If NULL, initialized automatically.
 #' @param tau_e Initial precision of errors. If NULL, initialized automatically.
 #' @param update_order A numeric vector specifying the order of updates for coefficients. If NULL, initialized automatically.
 #' @param mu_alpha Mean for the prior on alpha (expansion parameter).
 #' @param tau_alpha A numeric vector of tau_alpha values to cross-validate over. Must have at least two values.
 #' @param tau_b Initial precision for beta_j (when s_j = 1).
-#' @param intercept Logical, indicating whether an intercept term should be included in the model.
+#' @param standardize Logical. Center Y, and center and scale X. Default is TRUE.
+#' @param intercept Logical. Whether to include an intercept. Default is TRUE. After the model is fit on the centered and scaled data, the final coefficients are "unscaled" to put them back on the original scale of your data. The intercept is then calculated separately using the means and the final coefficients.
 #' @param max_iter Maximum number of outer loop iterations for each spexvb fit.
 #' @param tol Convergence tolerance for each spexvb fit.
 #' @param seed Seed for reproducibility of data splitting and `glmnet` initials.
@@ -38,16 +39,17 @@ cv.spexvb <- function(
     k = 5, #the number of folds to use
     X, # design matrix
     Y, # response vector
-    mu = NULL, # Variational Normal mean estimated beta coefficient from lasso, posterior expectation of bj|sj = 1
-    omega = NULL, # Variational probability, expectation that the coefficient from lasso is not zero, the posterior expectation of sj
-    c_pi = NULL, # π ∼ Beta(aπ, bπ), known/estimated
-    d_pi = NULL, # π ∼ Beta(aπ, bπ), known/estimated
+    mu_0 = NULL, # Variational Normal mean estimated beta coefficient from lasso, posterior expectation of bj|sj = 1
+    omega_0 = NULL, # Variational probability, expectation that the coefficient from lasso is not zero, the posterior expectation of sj
+    c_pi_0 = NULL, # π ∼ Beta(aπ, bπ), known/estimated
+    d_pi_0 = NULL, # π ∼ Beta(aπ, bπ), known/estimated
     tau_e = NULL, # errors iid N(0, tau_e^{-1}), known/estimated
     update_order = NULL,
     mu_alpha = 1, # alpha is N(mu_alpha, (tau_e*tau_alphalpha)^{-1}), known/estimated
     tau_alpha = c(0,10^(3:7)), # Can be a vector now
     tau_b = 400, # initial. b_j is N(0, (tau_e*tau_b)^{-1}), known/estimated
-    intercept = FALSE,
+    standardize = T, # Center Y, and center and scale X
+    intercept = T,
     max_iter = 100L, # Ensure it's an integer literal
     tol = 1e-5,
     seed = 12376, # seed for cv.glmnet initials
@@ -132,13 +134,14 @@ cv.spexvb <- function(
       fit_spexvb <- spexvb(
         X = X_train, # design matrix
         Y = Y_train, # response vector
-        mu = mu, # Pass initial mu, omega if provided
-        omega = omega,
-        c_pi = c_pi,
-        d_pi = d_pi,
+        mu_0 = mu_0, # Pass initial mu, omega if provided
+        omega_0 = omega_0,
+        c_pi_0 = c_pi_0,
+        d_pi_0 = d_pi_0,
         mu_alpha = mu_alpha,
         tau_alpha = current_tau_alpha, # Use the current tau_alpha from iteration
         tau_b = tau_b,
+        standardize = standardize,
         intercept = intercept,
         tau_e = tau_e,
         update_order = update_order,
@@ -155,13 +158,12 @@ cv.spexvb <- function(
         }
         NA_real_
       } else {
-        beta_hat_coefficients <- fit_spexvb$mu # This contains the 'p' coefficients for X
 
         y_pred <- if (intercept) {
           # Explicitly add intercept if it was included in the model
-          X_test %*% beta_hat_coefficients + fit_spexvb$intercept
+          cbind(1,X_test) %*% fit_spexvb$beta
         } else {
-          X_test %*% beta_hat_coefficients
+          X_test %*% fit_spexvb$beta
         }
         mean((Y_test - y_pred)^2)
       }

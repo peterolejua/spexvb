@@ -7,11 +7,10 @@
 get.initials(
   X,
   Y,
-  mu = NULL,
-  omega = NULL,
-  c_pi = NULL,
-  d_pi = NULL,
-  intercept = FALSE,
+  mu_0 = NULL,
+  omega_0 = NULL,
+  c_pi_0 = NULL,
+  d_pi_0 = NULL,
   tau_e = NULL,
   update_order = NULL,
   seed = 12376
@@ -22,15 +21,13 @@ get.initials(
 
 \item{Y}{A response vector.}
 
-\item{mu}{Initial mean.}
+\item{mu_0}{Initial mean.}
 
-\item{omega}{Initial omega.}
+\item{omega_0}{Initial omega.}
 
-\item{c_pi}{Initial c_pi.}
+\item{c_pi_0}{Initial c_pi.}
 
-\item{d_pi}{Initial d_pi.}
-
-\item{intercept}{Logical, whether an intercept is included.}
+\item{d_pi_0}{Initial d_pi.}
 
 \item{tau_e}{Initial tau_e.}
 

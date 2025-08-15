@@ -6,13 +6,13 @@
 #' @param k Integer, the number of folds to use for cross-validation. Must be greater than 2.
 #' @param X A design matrix.
 #' @param Y A response vector.
-#' @param mu Initial variational mean (posterior expectation of beta_j | s_j = 1).
+#' @param mu_0 Initial variational mean (posterior expectation of beta_j | s_j = 1).
 #'   If NULL, initialized automatically by `get.initials`.
-#' @param omega Initial variational probability (posterior expectation of s_j).
+#' @param omega_0 Initial variational probability (posterior expectation of s_j).
 #'   If NULL, initialized automatically by `get.initials`.
-#' @param c_pi Prior parameter for pi (beta distribution shape1).
+#' @param c_pi_0 Prior parameter for pi (beta distribution shape1).
 #'   If NULL, initialized automatically by `get.initials`.
-#' @param d_pi Prior parameter for pi (beta distribution shape2).
+#' @param d_pi_0 Prior parameter for pi (beta distribution shape2).
 #'   If NULL, initialized automatically by `get.initials`.
 #' @param tau_e Initial precision of errors.
 #'   If NULL, initialized automatically by `get.initials`.
@@ -22,7 +22,8 @@
 #' @param tau_alpha A numeric vector of `tau_alpha` values to cross-validate over.
 #'   Must have at least two values.
 #' @param tau_b Initial precision for beta_j (when s_j = 1).
-#' @param intercept Logical, indicating whether an intercept term should be included in the model.
+#' @param standardize Logical. Center Y, and center and scale X. Default is TRUE.
+#' @param intercept Logical. Whether to include an intercept. Default is TRUE. After the model is fit on the centered and scaled data, the final coefficients are "unscaled" to put them back on the original scale of your data. The intercept is then calculated separately using the means and the final coefficients.
 #' @param max_iter Maximum number of outer loop iterations for both CV fits and the final fit.
 #' @param tol Convergence tolerance for both CV fits and the final fit.
 #' @param seed Seed for reproducibility of data splitting and `glmnet` initials.
@@ -41,16 +42,17 @@ cv.spexvb.fit <- function(
     k = 5, #the number of folds to use
     X, # design matrix
     Y, # response vector
-    mu = NULL, # Variational Normal mean estimated beta coefficient from lasso, posterior expectation of bj|sj = 1
-    omega = NULL, # Variational probability, expectation that the coefficient from lasso is not zero, the posterior expectation of sj
-    c_pi = NULL, # π ∼ Beta(aπ, bπ), known/estimated
-    d_pi = NULL, # π ∼ Beta(aπ, bπ), known/estimated
+    mu_0 = NULL, # Variational Normal mean estimated beta coefficient from lasso, posterior expectation of bj|sj = 1
+    omega_0 = NULL, # Variational probability, expectation that the coefficient from lasso is not zero, the posterior expectation of sj
+    c_pi_0 = NULL, # π ∼ Beta(aπ, bπ), known/estimated
+    d_pi_0 = NULL, # π ∼ Beta(aπ, bπ), known/estimated
     tau_e = NULL, # errors iid N(0, tau_e^{-1}), known/estimated
     update_order = NULL,
     mu_alpha = 1, # alpha is N(mu_alpha, (tau_e*tau_alphalpha)^{-1}), known/estimated
     tau_alpha = c(0,10^(3:7)), # Can be a vector now
     tau_b = 400, # initial. b_j is N(0, (tau_e*tau_b)^{-1}), known/estimated
-    intercept = FALSE,
+    standardize = T, # Center Y, and center and scale X
+    intercept = T,
     max_iter = 100L, # Ensure it's an integer literal
     tol = 1e-5,
     seed = 12376, # seed for cv.glmnet initials
@@ -63,13 +65,12 @@ cv.spexvb.fit <- function(
   initials <- spexvb::get.initials(
     X = X, # design matrix
     Y = Y, # response vector
-    mu = mu, # Variational Normal mean estimated beta coefficient from lasso, posterior expectation of bj|sj = 1
-    omega = omega, # Variational probability, expectation that the coefficient from lasso is not zero, the posterior expectation of sj
-    c_pi = c_pi, # π ∼ Beta(aπ, bπ), known/estimated
-    d_pi = d_pi, # π ∼ Beta(aπ, bπ), known/estimated
+    mu_0 = mu_0, # Variational Normal mean estimated beta coefficient from lasso, posterior expectation of bj|sj = 1
+    omega_0 = omega_0, # Variational probability, expectation that the coefficient from lasso is not zero, the posterior expectation of sj
+    c_pi_0 = c_pi_0, # π ∼ Beta(aπ, bπ), known/estimated
+    d_pi_0 = d_pi_0, # π ∼ Beta(aπ, bπ), known/estimated
     tau_e = tau_e, # errors iid N(0, tau_e^{-1}), known/estimated
     update_order = update_order,
-    intercept = intercept, # Pass intercept here so initials are consistent
     seed = seed # seed for cv
   )
 
@@ -78,19 +79,20 @@ cv.spexvb.fit <- function(
     k = k, #the number of folds to use
     X = X, # design matrix
     Y = Y, # response vector
-    mu = initials$mu_0, # Use initials from full data for CV, but note that CV itself will re-initialize per fold
-    omega = initials$omega_0, # This argument is passed to cv.spexvb, which then passes it to spexvb.
+    mu_0 = initials$mu_0, # Use initials from full data for CV, but note that CV itself will re-initialize per fold
+    omega_0 = initials$omega_0, # This argument is passed to cv.spexvb, which then passes it to spexvb.
     # Note: cv.spexvb re-initializes within each fold using get.initials
     # so these `mu` and `omega` from `initials` might not be directly used *within* the CV folds,
     # unless you explicitly changed `get.initials` to pass them through.
     # However, it's good to pass them here as part of the consistent parameter set for cv.spexvb.
-    c_pi = initials$c_pi,
-    d_pi = initials$d_pi,
+    c_pi_0 = initials$c_pi_0,
+    d_pi_0 = initials$d_pi_0,
     tau_e = initials$tau_e,
     update_order = initials$update_order,
     mu_alpha = mu_alpha,
     tau_alpha = tau_alpha,
     tau_b = tau_b,
+    standardize = standardize,
     intercept = intercept,
     max_iter = max_iter,
     tol = tol,
@@ -104,15 +106,16 @@ cv.spexvb.fit <- function(
     spexvb::spexvb(
       X = X, # design matrix
       Y = Y, # response vector
-      mu = initials$mu_0, # Use the initial values derived from the full dataset
-      omega = initials$omega_0,
-      c_pi = initials$c_pi,
-      d_pi = initials$d_pi,
+      mu_0 = initials$mu_0, # Use the initial values derived from the full dataset
+      omega_0 = initials$omega_0,
+      c_pi_0 = initials$c_pi_0,
+      d_pi_0 = initials$d_pi_0,
       tau_e = initials$tau_e,
       update_order = initials$update_order,
       mu_alpha = mu_alpha,
       tau_alpha = cv_results$tau_alpha_opt, # Use the optimal tau_alpha from CV
       tau_b = tau_b,
+      standardize = standardize,
       intercept = intercept,
       max_iter = max_iter,
       tol = tol,

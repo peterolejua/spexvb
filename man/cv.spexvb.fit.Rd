@@ -8,16 +8,17 @@ cv.spexvb.fit(
   k = 5,
   X,
   Y,
-  mu = NULL,
-  omega = NULL,
-  c_pi = NULL,
-  d_pi = NULL,
+  mu_0 = NULL,
+  omega_0 = NULL,
+  c_pi_0 = NULL,
+  d_pi_0 = NULL,
   tau_e = NULL,
   update_order = NULL,
   mu_alpha = 1,
   tau_alpha = c(0, 10^(3:7)),
   tau_b = 400,
-  intercept = FALSE,
+  standardize = T,
+  intercept = T,
   max_iter = 100L,
   tol = 1e-05,
   seed = 12376,
@@ -31,16 +32,16 @@ cv.spexvb.fit(
 
 \item{Y}{A response vector.}
 
-\item{mu}{Initial variational mean (posterior expectation of beta_j | s_j = 1).
+\item{mu_0}{Initial variational mean (posterior expectation of beta_j | s_j = 1).
 If NULL, initialized automatically by \code{get.initials}.}
 
-\item{omega}{Initial variational probability (posterior expectation of s_j).
+\item{omega_0}{Initial variational probability (posterior expectation of s_j).
 If NULL, initialized automatically by \code{get.initials}.}
 
-\item{c_pi}{Prior parameter for pi (beta distribution shape1).
+\item{c_pi_0}{Prior parameter for pi (beta distribution shape1).
 If NULL, initialized automatically by \code{get.initials}.}
 
-\item{d_pi}{Prior parameter for pi (beta distribution shape2).
+\item{d_pi_0}{Prior parameter for pi (beta distribution shape2).
 If NULL, initialized automatically by \code{get.initials}.}
 
 \item{tau_e}{Initial precision of errors.
@@ -56,7 +57,9 @@ Must have at least two values.}
 
 \item{tau_b}{Initial precision for beta_j (when s_j = 1).}
 
-\item{intercept}{Logical, indicating whether an intercept term should be included in the model.}
+\item{standardize}{Logical. Center Y, and center and scale X. Default is TRUE.}
+
+\item{intercept}{Logical. Whether to include an intercept. Default is TRUE. After the model is fit on the centered and scaled data, the final coefficients are "unscaled" to put them back on the original scale of your data. The intercept is then calculated separately using the means and the final coefficients.}
 
 \item{max_iter}{Maximum number of outer loop iterations for both CV fits and the final fit.}
 

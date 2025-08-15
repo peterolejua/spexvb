@@ -5,7 +5,7 @@ Version: 0.1.0
 Authors@R: c(
   person("Peter", "Olejua", email = "polejua@email.sc.edu", role = c("aut", "cre")),
   person("Alexander", "McLain", email = "mclaina@mailbox.sc.edu", role = c("aut")) )
-Description: This package implements a Parameter Expanded Variational Bayes for Linear Regression with High-dimensional Variable Selection and Spike-and-slab Priors. It includes multiple C++ backend versions of the core fitting algorithm for testing and comparison.
+Description: This package implements a Parameter Expanded Variational Bayes for Linear Regression with High-dimensional Variable Selection and Spike-and-slab Priors.
 License: MIT + file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
