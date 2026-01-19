@@ -53,7 +53,7 @@ Y_c <- Y - Y_mean
 seed <- 17
 set.seed(seed)
 
-# This might take 3 minuted depending on your computer
+# This might take 3 minutes depending on your computer
 tic("Spexvb CV and optimal fit")
 fit_spexvb <- cv.spexvb.fit(
   k = 5,
