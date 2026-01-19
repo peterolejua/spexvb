@@ -15,7 +15,7 @@ importFrom(glmnet, cv.glmnet)
 importFrom(stats, predict, coef)
 
 # Export your main R functions
-export(get.initials, spexvb, cv.spexvb, cv.spexvb.fit)
+export(get.initials, get.initials.logistic, spexvb, spexvb.logistic, hspvb, cv.spexvb, cv.spexvb.fit)
 
 # Export your C++ functions (as they are named in R via Rcpp::export)
-export(fit_linear_alpha_remap)
+export(fit_linear_alpha_remap, fit_linear_gamma_hierarchy, fit_logistic_alpha_remap)

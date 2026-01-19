@@ -5,3 +5,11 @@ fit_linear_alpha_remap <- function(X, Y, mu, omega, c_pi, d_pi, mu_alpha, tau_al
     .Call(`_spexvb_fit_linear_alpha_remap`, X, Y, mu, omega, c_pi, d_pi, mu_alpha, tau_alpha, tau_b, tau_e, update_order, max_iter, tol)
 }
 
+fit_linear_gamma_hierarchy <- function(X, Y, mu, omega, c_pi, d_pi, a_prior_tau_b, b_prior_tau_b, tau_e, update_order, max_iter, tol) {
+    .Call(`_spexvb_fit_linear_gamma_hierarchy`, X, Y, mu, omega, c_pi, d_pi, a_prior_tau_b, b_prior_tau_b, tau_e, update_order, max_iter, tol)
+}
+
+fit_logistic_alpha_remap <- function(X, Y, mu, omega, c_pi, d_pi, update_order, mu_alpha, tau_alpha, tau_b, max_iter, tol) {
+    .Call(`_spexvb_fit_logistic_alpha_remap`, X, Y, mu, omega, c_pi, d_pi, update_order, mu_alpha, tau_alpha, tau_b, max_iter, tol)
+}
+

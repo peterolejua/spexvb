@@ -34,9 +34,55 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// fit_linear_gamma_hierarchy
+Rcpp::List fit_linear_gamma_hierarchy(const arma::mat& X, const arma::vec& Y, arma::vec mu, arma::vec omega, double c_pi, double d_pi, double a_prior_tau_b, double b_prior_tau_b, const double& tau_e, const arma::uvec& update_order, const size_t& max_iter, const double& tol);
+RcppExport SEXP _spexvb_fit_linear_gamma_hierarchy(SEXP XSEXP, SEXP YSEXP, SEXP muSEXP, SEXP omegaSEXP, SEXP c_piSEXP, SEXP d_piSEXP, SEXP a_prior_tau_bSEXP, SEXP b_prior_tau_bSEXP, SEXP tau_eSEXP, SEXP update_orderSEXP, SEXP max_iterSEXP, SEXP tolSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const arma::mat& >::type X(XSEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type Y(YSEXP);
+    Rcpp::traits::input_parameter< arma::vec >::type mu(muSEXP);
+    Rcpp::traits::input_parameter< arma::vec >::type omega(omegaSEXP);
+    Rcpp::traits::input_parameter< double >::type c_pi(c_piSEXP);
+    Rcpp::traits::input_parameter< double >::type d_pi(d_piSEXP);
+    Rcpp::traits::input_parameter< double >::type a_prior_tau_b(a_prior_tau_bSEXP);
+    Rcpp::traits::input_parameter< double >::type b_prior_tau_b(b_prior_tau_bSEXP);
+    Rcpp::traits::input_parameter< const double& >::type tau_e(tau_eSEXP);
+    Rcpp::traits::input_parameter< const arma::uvec& >::type update_order(update_orderSEXP);
+    Rcpp::traits::input_parameter< const size_t& >::type max_iter(max_iterSEXP);
+    Rcpp::traits::input_parameter< const double& >::type tol(tolSEXP);
+    rcpp_result_gen = Rcpp::wrap(fit_linear_gamma_hierarchy(X, Y, mu, omega, c_pi, d_pi, a_prior_tau_b, b_prior_tau_b, tau_e, update_order, max_iter, tol));
+    return rcpp_result_gen;
+END_RCPP
+}
+// fit_logistic_alpha_remap
+Rcpp::List fit_logistic_alpha_remap(const arma::mat& X, const arma::vec& Y, arma::vec mu, arma::vec omega, double c_pi, double d_pi, const arma::uvec& update_order, double mu_alpha, const double& tau_alpha, double tau_b, const size_t& max_iter, const double& tol);
+RcppExport SEXP _spexvb_fit_logistic_alpha_remap(SEXP XSEXP, SEXP YSEXP, SEXP muSEXP, SEXP omegaSEXP, SEXP c_piSEXP, SEXP d_piSEXP, SEXP update_orderSEXP, SEXP mu_alphaSEXP, SEXP tau_alphaSEXP, SEXP tau_bSEXP, SEXP max_iterSEXP, SEXP tolSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const arma::mat& >::type X(XSEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type Y(YSEXP);
+    Rcpp::traits::input_parameter< arma::vec >::type mu(muSEXP);
+    Rcpp::traits::input_parameter< arma::vec >::type omega(omegaSEXP);
+    Rcpp::traits::input_parameter< double >::type c_pi(c_piSEXP);
+    Rcpp::traits::input_parameter< double >::type d_pi(d_piSEXP);
+    Rcpp::traits::input_parameter< const arma::uvec& >::type update_order(update_orderSEXP);
+    Rcpp::traits::input_parameter< double >::type mu_alpha(mu_alphaSEXP);
+    Rcpp::traits::input_parameter< const double& >::type tau_alpha(tau_alphaSEXP);
+    Rcpp::traits::input_parameter< double >::type tau_b(tau_bSEXP);
+    Rcpp::traits::input_parameter< const size_t& >::type max_iter(max_iterSEXP);
+    Rcpp::traits::input_parameter< const double& >::type tol(tolSEXP);
+    rcpp_result_gen = Rcpp::wrap(fit_logistic_alpha_remap(X, Y, mu, omega, c_pi, d_pi, update_order, mu_alpha, tau_alpha, tau_b, max_iter, tol));
+    return rcpp_result_gen;
+END_RCPP
+}
 
 static const R_CallMethodDef CallEntries[] = {
     {"_spexvb_fit_linear_alpha_remap", (DL_FUNC) &_spexvb_fit_linear_alpha_remap, 13},
+    {"_spexvb_fit_linear_gamma_hierarchy", (DL_FUNC) &_spexvb_fit_linear_gamma_hierarchy, 12},
+    {"_spexvb_fit_logistic_alpha_remap", (DL_FUNC) &_spexvb_fit_logistic_alpha_remap, 12},
     {NULL, NULL, 0}
 };
 
