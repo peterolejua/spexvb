@@ -22,7 +22,8 @@ cv.spexvb.fit(
   max_iter = 100L,
   tol = 1e-05,
   seed = 12376,
-  verbose = TRUE
+  verbose = TRUE,
+  parallel = TRUE
 )
 }
 \arguments{
@@ -68,6 +69,8 @@ Must have at least two values.}
 \item{seed}{Seed for reproducibility of data splitting and \code{glmnet} initials.}
 
 \item{verbose}{Logical, if TRUE, prints progress messages during cross-validation.}
+
+\item{parallel}{Logical, if TRUE, search in parallel.}
 }
 \value{
 The final fitted \code{spexvb} model, which is a list containing the approximate

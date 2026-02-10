@@ -22,7 +22,8 @@ cv.spexvb(
   max_iter = 100L,
   tol = 1e-05,
   seed = 12376,
-  verbose = TRUE
+  verbose = TRUE,
+  parallel = TRUE
 )
 }
 \arguments{
@@ -61,6 +62,8 @@ cv.spexvb(
 \item{seed}{Seed for reproducibility of data splitting and \code{glmnet} initials.}
 
 \item{verbose}{Logical, if TRUE, prints progress messages during cross-validation.}
+
+\item{parallel}{Logical, if TRUE, search in parallel.}
 }
 \value{
 A list containing cross-validation results:

@@ -19,6 +19,7 @@
 #' @param tol Convergence tolerance for each spexvb fit.
 #' @param seed Seed for reproducibility of data splitting and `glmnet` initials.
 #' @param verbose Logical, if TRUE, prints progress messages during cross-validation.
+#' @param parallel Logical, if TRUE, search in parallel.
 #' @return A list containing cross-validation results:
 #'   \item{ordered_tau_alpha}{The sorted vector of tau_alpha values used.}
 #'   \item{epe_test_k}{A matrix of prediction errors (MSE) for each fold (rows) and each tau_alpha (columns).}
@@ -53,7 +54,8 @@ cv.spexvb <- function(
     max_iter = 100L, # Ensure it's an integer literal
     tol = 1e-5,
     seed = 12376, # seed for cv.glmnet initials
-    verbose = TRUE
+    verbose = TRUE,
+    parallel = TRUE
 ){
 
   set.seed(seed)
@@ -123,10 +125,18 @@ cv.spexvb <- function(
     Y_test = as.vector(data[test_indices, ncol(data)]) # response vector
 
     # Train the model on the training set
+    # --- MODIFIED PARALLEL LOGIC ---
+    # Define the loop operator based on the 'parallel' argument
+    `%loop_op%` <- if (parallel) foreach::`%dopar%` else foreach::`%do%`
+
+    if (verbose) {
+      message(sprintf("Starting grid search over %d combinations (Parallel: %s)",
+                      nrow(hyper_grid), parallel))
+    }
     fold_mses <- foreach(
       current_tau_alpha = ordered_tau_alpha, # Renamed to avoid conflict with outer parameter
       .combine = 'c' # Combine into a vector for this fold
-    ) %do% { # Changed from %do% to %dopar%
+    ) %loop_op% { # Changed from %do% to %dopar%
       if (verbose) {
         message(paste("Fold:", i, "tau_alpha:", current_tau_alpha)) # Use message for package
       }

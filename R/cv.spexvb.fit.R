@@ -28,6 +28,7 @@
 #' @param tol Convergence tolerance for both CV fits and the final fit.
 #' @param seed Seed for reproducibility of data splitting and `glmnet` initials.
 #' @param verbose Logical, if TRUE, prints progress messages during cross-validation.
+#' @param parallel Logical, if TRUE, search in parallel.
 #' @return The final fitted `spexvb` model, which is a list containing the approximate
 #'   posterior parameters and convergence information for the full dataset using the
 #'   optimal `tau_alpha` determined by cross-validation.
@@ -56,7 +57,8 @@ cv.spexvb.fit <- function(
     max_iter = 100L, # Ensure it's an integer literal
     tol = 1e-5,
     seed = 12376, # seed for cv.glmnet initials
-    verbose = TRUE
+    verbose = TRUE,
+    parallel = TRUE
 ){
 
   set.seed(seed)
@@ -97,7 +99,8 @@ cv.spexvb.fit <- function(
     max_iter = max_iter,
     tol = tol,
     seed = seed,
-    verbose = verbose
+    verbose = verbose,
+    parallel = parallel
   )
 
   # Fit the final model with the optimal tau_alpha on the full dataset
