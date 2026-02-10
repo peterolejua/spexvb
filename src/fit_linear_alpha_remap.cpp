@@ -124,15 +124,15 @@ Rcpp::List fit_linear_alpha_remap(
 
     // test if things have gone off the rails
     double test_var = arma::dot(W,W)/n;
-    if((test_var/10 > test_var_y) & (t > 99)){
+    if((test_var/10 > test_var_y) && (t > 99)){
       alpha = 1;
     }
 
     // check for convergence
     arma::vec new_entr = entropy(omega);
 
-    if ((arma::norm(new_entr - old_entr, "inf") <= tol) &
-        (std::abs(alpha_diff*p1) <= 0.1) &
+    if ((arma::norm(new_entr - old_entr, "inf") <= tol) &&
+        (std::abs(alpha_diff*p1) <= 0.1) &&
         (alpha_diff<=0)
     ) {
       converged = true;

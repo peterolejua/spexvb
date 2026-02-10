@@ -3,3 +3,6 @@
 ^LICENSE\.md$
 ^NEWS\.md$
 ^CRAN-SUBMISSION$
+^cran-comments\.md$
+^WORDLIST$
+^github-update\.txt$

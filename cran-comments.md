@@ -8,3 +8,4 @@
 * This is a new submission.
 * NOTE 1: New submission.
 * NOTE 2: Non-standard file 'cran-comments.md' (this file).
+* Fixed a C++ warning found during Debian pre-tests regarding bitwise vs logical operators in convergence checks.
