@@ -1,5 +1,7 @@
 // common_helpers.cpp
 #include "common_helpers.h" // Include its own header first
+// Instead of Rcpp::Function, use the R standalone math library
+#include <Rmath.h>
 
 // Define helper functions here
 arma::vec entropy(const arma::vec &x) {
@@ -32,8 +34,12 @@ arma::vec gram_diag(const arma::mat &X) {
   return diag;
 }
 
-// Function to calculate the digamma function using R's digamma
+// // Function to calculate the digamma function using R's digamma
+// double r_digamma(double x) {
+//   static Rcpp::Function digamma("digamma");
+//   return Rcpp::as<double>(digamma(Rcpp::Named("x") = x));
+// }
+
 double r_digamma(double x) {
-  static Rcpp::Function digamma("digamma");
-  return Rcpp::as<double>(digamma(Rcpp::Named("x") = x));
+  return Rf_digamma(x); // This uses the internal R C-code directly
 }

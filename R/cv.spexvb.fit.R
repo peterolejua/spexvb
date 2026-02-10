@@ -37,7 +37,6 @@
 #'   the `tau_alpha` that minimizes cross-validation error, and finally calls `spexvb`
 #'   on the complete dataset with the chosen `tau_alpha`.
 #' @seealso \code{\link{cv.spexvb}}, \code{\link{spexvb}}
-#' @importFrom get.initials spexvb spexvb cv.spexvb
 #' @export
 cv.spexvb.fit <- function(
     k = 5, #the number of folds to use
@@ -45,8 +44,8 @@ cv.spexvb.fit <- function(
     Y, # response vector
     mu_0 = NULL, # Variational Normal mean estimated beta coefficient from lasso, posterior expectation of bj|sj = 1
     omega_0 = NULL, # Variational probability, expectation that the coefficient from lasso is not zero, the posterior expectation of sj
-    c_pi_0 = NULL, # π ∼ Beta(aπ, bπ), known/estimated
-    d_pi_0 = NULL, # π ∼ Beta(aπ, bπ), known/estimated
+    c_pi_0 = NULL, # \eqn{\pi \sim Beta(a_\pi, b_\pi)}, known/estimated
+    d_pi_0 = NULL, # \eqn{\pi \sim Beta(a_\pi, b_\pi)}, known/estimated
     tau_e = NULL, # errors iid N(0, tau_e^{-1}), known/estimated
     update_order = NULL,
     mu_alpha = 1, # alpha is N(mu_alpha, (tau_e*tau_alphalpha)^{-1}), known/estimated

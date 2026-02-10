@@ -1,7 +1,5 @@
 // [[Rcpp::depends(RcppArmadillo)]]
 
-#include <fstream>
-#include <iostream>
 #include <RcppArmadillo.h>
 #include <Rcpp.h> // Explicitly include Rcpp.h
 #include <cmath>  // For std::sqrt, std::log, std::abs
@@ -25,7 +23,6 @@ Rcpp::List fit_linear_gamma_hierarchy(
 ) {
 
   // dimensions
-  double n = X.n_rows;
   double p = X.n_cols;
 
   // initialize entropy loss function for convergence check

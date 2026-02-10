@@ -1,15 +1,15 @@
 #' @title Hierarchical Spike-and-Slab Variational Bayes (HSPVB) for High-Dimensional Linear Regression
-#' @description Fits a sparse linear regression model using variational inference with a Gamma prior on the slab precision ($\tau_b$).
+#' @description Fits a sparse linear regression model using variational inference with a Gamma prior on the slab precision (\eqn{\tau_b}).
 #' The model uses spike-and-slab priors where the slab scale is adaptively learned.
 #' @param X A numeric matrix. The design matrix (n observations × p predictors).
 #' @param Y A numeric vector. The response vector of length n.
 #' @param mu_0 Optional numeric vector. Initial variational means for regression coefficients.
 #' @param omega_0 Optional numeric vector. Initial spike probabilities.
-#' @param c_pi_0 Optional numeric. Prior Beta(a, b) parameter a for the spike probability $\pi$.
-#' @param d_pi_0 Optional numeric. Prior Beta(a, b) parameter b for the spike probability $\pi$.
-#' @param a_prior_tau_b Optional numeric. Gamma prior shape parameter (a) for the slab precision $\tau_b$. Default is 1.
-#' @param b_prior_tau_b Optional numeric. Gamma prior rate parameter (b) for the slab precision $\tau_b$. Default is 0.01.
-#' @param tau_e Optional numeric. Known or estimated error precision $\tau_\epsilon$ (tau\_e in C++).
+#' @param c_pi_0 Optional numeric. Prior Beta(a, b) parameter a for the spike probability \eqn{\pi}.
+#' @param d_pi_0 Optional numeric. Prior Beta(a, b) parameter b for the spike probability \eqn{\pi}.
+#' @param a_prior_tau_b Optional numeric. Gamma prior shape parameter (a) for the slab precision \eqn{\tau_b}. Default is 1.
+#' @param b_prior_tau_b Optional numeric. Gamma prior rate parameter (b) for the slab precision \eqn{\tau_b}. Default is 0.01.
+#' @param tau_e Optional numeric. Known or estimated error precision \eqn{\tau_\epsilon}.
 #' @param update_order Optional integer vector. The coordinate update order (0-indexed for C++).
 #' @param standardize Logical. Center Y, and center and scale X. Default is TRUE.
 #' @param intercept Logical. Whether to include an intercept. Default is TRUE.
@@ -21,7 +21,7 @@
 #' inclusion probabilities (`omega`), final expected slab precision (`tau_b`),
 #' intercept (if applicable), convergence status, etc.
 #' @details This function acts as a wrapper for the C++ implementation of the variational Bayes algorithm
-#' with a hierarchical Gamma prior on the slab precision, \code{fit_linear_gamma_hierarchy}.
+#' with a hierarchical Gamma prior on the slab precision, \eqn{\tau_b}.
 #'
 #' @examples
 #' \dontrun{
@@ -38,11 +38,11 @@ hspvb <- function(
     Y, # response vector
     mu_0 = NULL, # Variational Normal mean estimated beta coefficient from lasso, posterior expectation of bj|sj = 1
     omega_0 = NULL, # Variational probability, expectation that the coefficient from lasso is not zero, the posterior expectation of sj
-    c_pi_0 = NULL, # $\pi \sim \text{Beta}(a_\pi, b_\pi)$
-    d_pi_0 = NULL, # $\pi \sim \text{Beta}(a_\pi, b_\pi)$
-    a_prior_tau_b = 0.1, # $\tau_b \sim \text{Gamma}(a_\tau, b_\tau)$ shape
-    b_prior_tau_b = 1, # $\tau_b \sim \text{Gamma}(a_\tau, b_\tau)$ rate
-    tau_e = NULL, # errors iid $N(0, \tau_\epsilon^{-1})$, known/estimated
+    c_pi_0 = NULL, # \eqn{\pi \sim \text{Beta}(a_\pi, b_\pi)}
+    d_pi_0 = NULL, # \eqn{\pi \sim \text{Beta}(a_\pi, b_\pi)}
+    a_prior_tau_b = 0.1, # \eqn{\tau_b \sim \text{Gamma}(a_\tau, b_\tau)} shape
+    b_prior_tau_b = 1, # \eqn{\tau_b \sim \text{Gamma}(a_\tau, b_\tau)} rate
+    tau_e = NULL, # errors iid \eqn{N(0, \tau_\epsilon^{-1})}, known/estimated
     update_order = NULL,
     standardize = TRUE, # Center Y, and center and scale X
     intercept = TRUE,

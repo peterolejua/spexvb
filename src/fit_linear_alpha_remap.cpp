@@ -1,7 +1,5 @@
 // [[Rcpp::depends(RcppArmadillo)]]
 
-#include <fstream>
-#include <iostream>
 #include <RcppArmadillo.h>
 #include <Rcpp.h> // Explicitly include Rcpp.h
 #include <cmath>  // For std::sqrt, std::log, std::abs

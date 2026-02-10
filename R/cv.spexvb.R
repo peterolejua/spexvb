@@ -32,7 +32,6 @@
 #'   is registered using `registerDoParallel()` or similar before calling this function.
 #' @importFrom caret createFolds
 #' @importFrom foreach foreach %do% %dopar%
-#' @importFrom spexvb spexvb
 #' @importFrom stats sd
 #' @importFrom stats setNames
 #' @export
@@ -42,8 +41,8 @@ cv.spexvb <- function(
     Y, # response vector
     mu_0 = NULL, # Variational Normal mean estimated beta coefficient from lasso, posterior expectation of bj|sj = 1
     omega_0 = NULL, # Variational probability, expectation that the coefficient from lasso is not zero, the posterior expectation of sj
-    c_pi_0 = NULL, # π ∼ Beta(aπ, bπ), known/estimated
-    d_pi_0 = NULL, # π ∼ Beta(aπ, bπ), known/estimated
+    c_pi_0 = NULL, # \eqn{\pi \sim Beta(a_\pi, b_\pi)}, known/estimated
+    d_pi_0 = NULL, # \eqn{\pi \sim Beta(a_\pi, b_\pi)}, known/estimated
     tau_e = NULL, # errors iid N(0, tau_e^{-1}), known/estimated
     update_order = NULL,
     mu_alpha = 1, # alpha is N(mu_alpha, (tau_e*tau_alphalpha)^{-1}), known/estimated
@@ -109,6 +108,7 @@ cv.spexvb <- function(
   folds <- caret::createFolds(data$Y, k = k, list = TRUE)
 
   # Use %dopar% for parallel execution if a backend is registered
+  i <- current_tau_alpha <- NULL # For CRAN
   epe_test_k <- foreach(
     i = 1:k,
     .combine = 'rbind',
@@ -130,8 +130,8 @@ cv.spexvb <- function(
     `%loop_op%` <- if (parallel) foreach::`%dopar%` else foreach::`%do%`
 
     if (verbose) {
-      message(sprintf("Starting grid search over %d combinations (Parallel: %s)",
-                      nrow(hyper_grid), parallel))
+      message(sprintf("Starting grid search over %d hyperparameters (Parallel: %s)",
+                      length(tau_alpha), parallel))
     }
     fold_mses <- foreach(
       current_tau_alpha = ordered_tau_alpha, # Renamed to avoid conflict with outer parameter

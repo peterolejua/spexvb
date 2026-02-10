@@ -31,15 +31,15 @@ hspvb(
 
 \item{omega_0}{Optional numeric vector. Initial spike probabilities.}
 
-\item{c_pi_0}{Optional numeric. Prior Beta(a, b) parameter a for the spike probability $\pi$.}
+\item{c_pi_0}{Optional numeric. Prior Beta(a, b) parameter a for the spike probability \eqn{\pi}.}
 
-\item{d_pi_0}{Optional numeric. Prior Beta(a, b) parameter b for the spike probability $\pi$.}
+\item{d_pi_0}{Optional numeric. Prior Beta(a, b) parameter b for the spike probability \eqn{\pi}.}
 
-\item{a_prior_tau_b}{Optional numeric. Gamma prior shape parameter (a) for the slab precision $\tau_b$. Default is 1.}
+\item{a_prior_tau_b}{Optional numeric. Gamma prior shape parameter (a) for the slab precision \eqn{\tau_b}. Default is 1.}
 
-\item{b_prior_tau_b}{Optional numeric. Gamma prior rate parameter (b) for the slab precision $\tau_b$. Default is 0.01.}
+\item{b_prior_tau_b}{Optional numeric. Gamma prior rate parameter (b) for the slab precision \eqn{\tau_b}. Default is 0.01.}
 
-\item{tau_e}{Optional numeric. Known or estimated error precision $\tau_\epsilon$ (tau\_e in C++).}
+\item{tau_e}{Optional numeric. Known or estimated error precision \eqn{\tau_\epsilon}.}
 
 \item{update_order}{Optional integer vector. The coordinate update order (0-indexed for C++).}
 
@@ -59,12 +59,12 @@ inclusion probabilities (\code{omega}), final expected slab precision (\code{tau
 intercept (if applicable), convergence status, etc.
 }
 \description{
-Fits a sparse linear regression model using variational inference with a Gamma prior on the slab precision ($\tau_b$).
+Fits a sparse linear regression model using variational inference with a Gamma prior on the slab precision (\eqn{\tau_b}).
 The model uses spike-and-slab priors where the slab scale is adaptively learned.
 }
 \details{
 This function acts as a wrapper for the C++ implementation of the variational Bayes algorithm
-with a hierarchical Gamma prior on the slab precision, \code{fit_linear_gamma_hierarchy}.
+with a hierarchical Gamma prior on the slab precision, \eqn{\tau_b}.
 }
 \examples{
 \dontrun{

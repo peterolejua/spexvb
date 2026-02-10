@@ -1,7 +1,5 @@
 // [[Rcpp::depends(RcppArmadillo)]]
 
-#include <fstream>
-#include <iostream>
 #include <RcppArmadillo.h>
 #include <Rcpp.h> // Explicitly include Rcpp.h
 #include <cmath>  // For std::sqrt, std::log, std::abs
@@ -41,7 +39,6 @@ Rcpp::List fit_logistic_alpha_remap(
 
   // initial alpha (expansion parameter)
   double alpha = 1;
-  double alpha_diff = 0;
   arma::vec convg_crit_vec = arma::vec(max_iter, arma::fill::zeros);
   arma::vec mu_alpha_vec = arma::vec(max_iter, arma::fill::zeros);
   arma::vec alpha_vec = arma::vec(max_iter, arma::fill::zeros);

@@ -1,15 +1,23 @@
 Package: spexvb
 Type: Package
-Title: Parameter Expanded Variational Bayes for Linear Regression with High-dimensional Variable Selection and Spike-and-slab Priors
+Title: Parameter Expanded Variational Bayes for High-Dimensional Linear Regression
 Version: 0.1.0
-Authors@R: c(
-  person("Peter", "Olejua", email = "polejua@email.sc.edu", role = c("aut", "cre")),
-  person("Alexander", "McLain", email = "mclaina@mailbox.sc.edu", role = c("aut")) )
-Description: This package implements a Parameter Expanded Variational Bayes for Linear Regression with High-dimensional Variable Selection and Spike-and-slab Priors.
+Authors@R: c(person('Peter', 'Olejua', email = 'polejua@email.sc.edu', role = c('aut', 'cre'), comment = c(ORCID = '0000-0002-2478-0908')), person('Alexander', 'McLain', email = 'mclaina@mailbox.sc.edu', role = 'aut'))
+Description: Implements a parameter expanded variational Bayes algorithm for linear regression models with high-dimensional variable selection. The methodology utilizes spike-and-slab priors to perform simultaneous estimation and selection.
 License: MIT + file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.3
-Imports: Rcpp, glmnet
+Imports: 
+    Rcpp, 
+    glmnet,
+    caret,
+    foreach
 LinkingTo: Rcpp, RcppArmadillo
-Suggests: testthat (>= 3.0.0), roxygen2
+Suggests: 
+    testthat (>= 3.0.0), 
+    roxygen2,
+    knitr,
+    rmarkdown,
+    doParallel
+VignetteBuilder: knitr

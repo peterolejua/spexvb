@@ -37,8 +37,8 @@ spexvb <- function(
     Y, # response vector
     mu_0 = NULL, # Variational Normal mean estimated beta coefficient from lasso, posterior expectation of bj|sj = 1
     omega_0 = NULL, # Variational probability, expectation that the coefficient from lasso is not zero, the posterior expectation of sj
-    c_pi_0 = NULL, # π ∼ Beta(aπ, bπ), known/estimated
-    d_pi_0 = NULL, # π ∼ Beta(aπ, bπ), known/estimated
+    c_pi_0 = NULL, # \eqn{\pi \sim Beta(a_\pi, b_\pi)}
+    d_pi_0 = NULL, # \eqn{\pi \sim Beta(a_\pi, b_\pi)}
     tau_e = NULL, # errors iid N(0, tau_e^{-1}), known/estimated
     update_order = NULL,
     mu_alpha = 1, # alpha is N(mu_alpha, (tau_e*tau_alpha)^{-1}), known/estimated
@@ -60,7 +60,7 @@ spexvb <- function(
     warning("Setting standardize <- T to calculate intercept")
     standardize <- T
     }
-  
+
   if (standardize){
     X_means <- colMeans(X)
     X_c <- scale(X, center = X_means, scale = F)

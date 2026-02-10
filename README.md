@@ -1,85 +1,74 @@
-# spexvb
-This is a package to performParameter Expanded Variational Bayes for Linear Regression
-with High-dimensional Variable Selection and Spike-and-slab
-Priors
+# spexvb: Parameter Expanded Variational Bayes for Sparse High-Dimensional Regression
+
+[![CRAN status](https://www.r-pkg.org/badges/version/spexvb)](https://CRAN.R-project.org/package=spexvb) The `spexvb` package implements a **Sparse Parameter-Expanded Variational Bayes** algorithm for well-calibrated linear and logistic regression in high-dimensional settings. By utilizing parameter expansion and spike-and-slab priors, the methodology improves robustness to prior specifications and enhances predictive calibration compared to standard Variational Bayes.
 
 ## Installation
-To install the package, please follow the code snippet below: 
 
-```
-library(devtools)
-install_github("peterolejua/spexvb")
+You can install the released version of `spexvb` from [CRAN](https://CRAN.R-project.org) with:
+
+``` r
+install.packages("spexvb")
 ```
 
-## Example
-Here is an example for conducting analysis using spexvb: 
+Or the development version from GitHub:
 
+``` r
+# install.packages("devtools")
+devtools::install_github("peterolejua/spexvb")
 ```
+
+## Quick Start Example
+
+This example demonstrates how to perform cross-validation and fit the optimal model using simulated high-dimensional data.
+
+``` r
 library(spexvb)
-# For parallel computing ####
 library(doParallel)
-no_cores <- detectCores()
-# no_cores <- 60
-cl <- makeCluster(no_cores)
-registerDoParallel(cl)
-# Load other libraries
-library(tictoc)
+cl <- makeCluster(min(2, parallel::detectCores())) 
+registerDoParallel( cl)
 
-# load data from the  CLL study as provided in MOFAdata
-# use methylation data, gene expression data and drug responses as predictors
-library(MOFAdata)
-data(CLL_data)
-CLL_data <- CLL_data[1:3]
-CLL_data <- lapply(CLL_data,t)
-CLL_data <- Reduce(cbind, CLL_data)
 
-#only include patient samples profiles in all three omics
-CLL_data <- CLL_data[apply(CLL_data,1, function(p) !any(is.na(p))),]
-dim(CLL_data)
+# 1. Simulate high-dimensional data (n=100, p=500)
+set.seed(17)
+n <- 100
+p <- 500
+X <- matrix(rnorm(n * p), n, p)
+true_beta <- c(rep(3, 5), rep(0, p - 5)) # 5 active predictors
+Y <- X %*% true_beta + rnorm(n)
 
-# prepare design matrix and response
-X <- CLL_data[,!grepl("D_002", colnames(CLL_data))]
-Y <- rowMeans(CLL_data[,grepl("D_002", colnames(CLL_data))])
-
-# rescaling
-X_means <- colMeans(X)
-X_c <- scale(X, center = X_means, scale = F)
-sigma_estimate <- sqrt(colMeans(X_c^2)) 
-X_cs <- scale(X, center = F, scale = sigma_estimate)
-
-Y_mean <- mean(Y)
-Y_c <- Y - Y_mean
-
-seed <- 17
-set.seed(seed)
-
-# This might take 3 minutes depending on your computer
-tic("Spexvb CV and optimal fit")
-fit_spexvb <- cv.spexvb.fit(
+# 2. Perform 5-fold CV to find optimal tau_alpha and fit final model
+fit <- cv.spexvb.fit(
   k = 5,
-  X = X_cs, # design matrix
-  Y = Y_c, # response vector
-  # Calculate the initials for each of the 10 folds
-  mu = NULL, # Variational Normal mean estimated beta coefficient from lasso,  posterior expectation of bj|sj = 1
-  omega = NULL, # Variational probability, expectation that the coefficient from lasso is not zero, the posterior expectation of sj
-  c_pi = NULL, # π ∼ Beta(aπ, bπ), known/estimated
-  d_pi = NULL, # π ∼ Beta(aπ, bπ), known/estimated
-  tau_e = NULL, # errors iid N(0, tau_e^{-1}), known/estimated
-  update_order = NULL,
-  mu_alpha = 1, # alpha is N(mu_alpha, (tau_e*tau_alphalpha)^{-1}), known/estimated
-  tau_alpha = c(0,10^(3:7)),
-  tau_b = 400, # initial. b_j is N(0, (tau_e*tau_b)^{-1}), known/estimated
-  standardize = F,
-  intercept = F,
-  max_iter = 500L,
-  tol = 1e-5,
-  seed = 17 # seed for cv.glmnet initials
-)  # Run the fit function
-spxlvb_time1 <- toc()
+  X = X, 
+  Y = Y,
+  tau_alpha = c(0, 10^(3:6)), # Precision for expansion parameter alpha
+  standardize = TRUE,
+  intercept = TRUE
+)
 
-spexvb_beta <- fit_spexvb$mu * fit_spexvb$omega/sigma_estimate
-plot(spexvb_beta)
+# 4. Visualize results
+plot(true_beta, main = "True Coefficients", ylab = "Value")
+plot(fit$beta, main = "Estimated Coefficients", ylab = "Value")
+abline(h = 0, col = "red", lty = 2)
 
-# Stop the parallel backend ####
 stopCluster(cl)
 ```
+
+## Authors
+
+-   **Peter Olejua** - *University of South Carolina*
+
+-   **Enakshi Saha** - *University of South Carolina*
+
+-   **Rahul Ghosal** - *University of South Carolina*
+
+-   **Ray Bai** - *George Mason University*
+
+-   **Alexander McLain** - *University of South Carolina*
+
+## Citation
+
+If you use this package in your research, please cite:\
+\
+Olejua, P., Saha, E., Ghosal, R., Bai, R., & McLain, A. (2026). Parameter Expanded Variational Bayes for Well-Calibrated High-Dimensional Linear Regression with Spike-and-Slab Priors. *Statistics and Computing*, Under Revision.
+[Preprint DOI: 10.21203/rs.3.rs-7208847/v1](https://doi.org/10.21203/rs.3.rs-7208847/v1)
