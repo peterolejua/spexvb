@@ -44,6 +44,25 @@ spexvb.logistic(
 
 \item{tol}{Convergence tolerance. Default is 1e-4.}
 }
+\value{
+A list with posterior summaries including estimated coefficients (\code{mu}),
+inclusion probabilities (\code{omega}), final expected slab precision (\code{tau_b}),
+intercept (if applicable), convergence status, etc.
+}
 \description{
 Fits a sparse logistic regression model using variational inference with an alpha expansion step.
+}
+\examples{
+\donttest{
+n <- 50
+p <- 100
+X <- matrix(rnorm(n * p), n, p)
+# Generate binary response
+Y <- rbinom(n, 1, plogis(X[,1] * 2))
+
+fit <- spexvb.logistic(X, Y)
+
+# Check convergence
+print(fit$converged)
+}
 }

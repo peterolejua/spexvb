@@ -17,6 +17,19 @@
 #' @return A list of initialized parameters.
 #' @importFrom glmnet cv.glmnet
 #' @importFrom stats predict coef
+#' @examples
+#' \donttest{
+#' n <- 50
+#' p <- 100
+#' X <- matrix(rnorm(n * p), n, p)
+#' # Generate binary response
+#' Y <- rbinom(n, 1, plogis(X[,1]))
+#'
+#' initials <- get.initials.logistic(X, Y)
+#'
+#' # View the initial mu (posterior means)
+#' head(initials$mu_0)
+#' }
 #' @export
 get.initials.logistic <- function(
     X, # design matrix
@@ -48,7 +61,7 @@ get.initials.logistic <- function(
     Y,
     alpha = 1,
     family = "binomial",
-    intercept = T
+    intercept = TRUE
   )
   nz_ind_lambda.min <- predict(
     lasso_cv,
@@ -68,7 +81,7 @@ get.initials.logistic <- function(
   mu_0 = as.numeric(coef(lasso_cv, s = "lambda.min"))
   # Get update order, add a zero for the intercept (updated first)
   # Don't need to subtract one, since X used in program will add an intercept
-  update_order = c(0,order(abs(mu_0[-1]), decreasing = T))
+  update_order = c(0,order(abs(mu_0[-1]), decreasing = TRUE))
   }
   return(
     list(

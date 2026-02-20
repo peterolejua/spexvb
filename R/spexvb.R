@@ -20,12 +20,14 @@
 #'
 #' @return A list with posterior summaries including estimated coefficients (`mu`),
 #' inclusion probabilities (`omega`), intercept (if applicable), alpha path, convergence status, etc.
-#' @details This function acts as a wrapper for various C++ implementations of the SPEVXB algorithm.
-#'   It handles initial parameter setup and dynamically dispatches to the chosen C++ version.
+#' @details This function acts as a wrapper for a C++ implementations of the SPEVXB algorithm.
 #' @examples
-#' \dontrun{
-#' # Example usage (assuming X and Y are defined)
-#' # result <- spexvb(X = my_X, Y = my_Y)
+#' \donttest{
+#' n <- 50
+#' p <- 100
+#' X <- matrix(rnorm(n * p), n, p)
+#' Y <- X[,1] * 2 + rnorm(n)
+#' result <- spexvb(X = X, Y = Y)
 #' }
 #' @useDynLib spexvb, .registration = TRUE
 #' @importFrom Rcpp sourceCpp
@@ -44,8 +46,8 @@ spexvb <- function(
     mu_alpha = 1, # alpha is N(mu_alpha, (tau_e*tau_alpha)^{-1}), known/estimated
     tau_alpha = 1000,
     tau_b = 400, # initial. b_j is N(0, (tau_e*tau_b)^{-1}), known/estimated
-    standardize = T, # Center Y, and center and scale X
-    intercept = T,
+    standardize = TRUE, # Center Y, and center and scale X
+    intercept = TRUE,
     max_iter = 1000,
     tol = 1e-5,
     seed = 12376 # seed for cv.glmnet initials
@@ -57,15 +59,15 @@ spexvb <- function(
 
   #rescale data if necessary
   if(intercept & !standardize){
-    warning("Setting standardize <- T to calculate intercept")
-    standardize <- T
+    warning("Setting standardize <- TRUE to calculate intercept")
+    standardize <- TRUE
     }
 
   if (standardize){
     X_means <- colMeans(X)
-    X_c <- scale(X, center = X_means, scale = F)
+    X_c <- scale(X, center = X_means, scale = FALSE)
     sigma_estimate <- sqrt(colMeans(X_c^2))
-    X_cs <- scale(X_c, center = F, scale = sigma_estimate)
+    X_cs <- scale(X_c, center = FALSE, scale = sigma_estimate)
 
     Y_mean <- mean(Y)
     Y_c <- Y - Y_mean

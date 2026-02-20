@@ -36,6 +36,18 @@
 #'   It first gets initial values for the full dataset, then uses `cv.spexvb` to find
 #'   the `tau_alpha` that minimizes cross-validation error, and finally calls `spexvb`
 #'   on the complete dataset with the chosen `tau_alpha`.
+#' @examples
+#' \donttest{
+#' # Generate simple synthetic data
+#' n <- 50
+#' p <- 100
+#' X <- matrix(rnorm(n * p), n, p)
+#' Y <- X[,1] * 2 + rnorm(n)
+#'
+#' # Run cross-validation and fit final model
+#' # (Setting k=3 to keep it quick for the example)
+#' fit <- cv.spexvb.fit(k = 3, X = X, Y = Y)
+#' }
 #' @seealso \code{\link{cv.spexvb}}, \code{\link{spexvb}}
 #' @export
 cv.spexvb.fit <- function(
@@ -51,8 +63,8 @@ cv.spexvb.fit <- function(
     mu_alpha = 1, # alpha is N(mu_alpha, (tau_e*tau_alphalpha)^{-1}), known/estimated
     tau_alpha = c(0,10^(3:7)), # Can be a vector now
     tau_b = 400, # initial. b_j is N(0, (tau_e*tau_b)^{-1}), known/estimated
-    standardize = T, # Center Y, and center and scale X
-    intercept = T,
+    standardize = TRUE, # Center Y, and center and scale X
+    intercept = TRUE,
     max_iter = 100L, # Ensure it's an integer literal
     tol = 1e-5,
     seed = 12376, # seed for cv.glmnet initials

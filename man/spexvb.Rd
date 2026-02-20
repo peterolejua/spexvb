@@ -16,8 +16,8 @@ spexvb(
   mu_alpha = 1,
   tau_alpha = 1000,
   tau_b = 400,
-  standardize = T,
-  intercept = T,
+  standardize = TRUE,
+  intercept = TRUE,
   max_iter = 1000,
   tol = 1e-05,
   seed = 12376
@@ -65,12 +65,14 @@ Fits a sparse linear regression model using variational inference with an alpha 
 The model uses spike-and-slab priors.
 }
 \details{
-This function acts as a wrapper for various C++ implementations of the SPEVXB algorithm.
-It handles initial parameter setup and dynamically dispatches to the chosen C++ version.
+This function acts as a wrapper for a C++ implementations of the SPEVXB algorithm.
 }
 \examples{
-\dontrun{
-# Example usage (assuming X and Y are defined)
-# result <- spexvb(X = my_X, Y = my_Y)
+\donttest{
+n <- 50
+p <- 100
+X <- matrix(rnorm(n * p), n, p)
+Y <- X[,1] * 2 + rnorm(n)
+result <- spexvb(X = X, Y = Y)
 }
 }

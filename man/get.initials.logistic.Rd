@@ -45,3 +45,17 @@ This helper function estimates initial values for variational parameters such as
 regression coefficients (\code{mu}), spike probabilities (\code{omega}), and hyperparameters
 like  \code{c_pi}, and \code{d_pi} using LASSO regression.
 }
+\examples{
+\donttest{
+n <- 50
+p <- 100
+X <- matrix(rnorm(n * p), n, p)
+# Generate binary response
+Y <- rbinom(n, 1, plogis(X[,1]))
+
+initials <- get.initials.logistic(X, Y)
+
+# View the initial mu (posterior means)
+head(initials$mu_0)
+}
+}

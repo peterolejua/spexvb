@@ -48,3 +48,16 @@ This helper function estimates initial values for variational parameters such as
 regression coefficients (\code{mu}), spike probabilities (\code{omega}), and hyperparameters
 like \code{tau_e}, \code{c_pi}, and \code{d_pi} using LASSO and Ridge regression fits.
 }
+\examples{
+\donttest{
+n <- 50
+p <- 100
+X <- matrix(rnorm(n * p), n, p)
+Y <- X[,1] * 2 + rnorm(n)
+
+initials <- get.initials(X, Y)
+
+# Check estimated noise precision (tau_e)
+print(initials$tau_e)
+}
+}

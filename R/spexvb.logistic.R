@@ -12,6 +12,22 @@
 #' @param tau_b Slab prior precision. Default is 1.
 #' @param max_iter Maximum iterations. Default is 300.
 #' @param tol Convergence tolerance. Default is 1e-4.
+#' @return A list with posterior summaries including estimated coefficients (`mu`),
+#' inclusion probabilities (`omega`), final expected slab precision (`tau_b`),
+#' intercept (if applicable), convergence status, etc.
+#' @examples
+#' \donttest{
+#' n <- 50
+#' p <- 100
+#' X <- matrix(rnorm(n * p), n, p)
+#' # Generate binary response
+#' Y <- rbinom(n, 1, plogis(X[,1] * 2))
+#'
+#' fit <- spexvb.logistic(X, Y)
+#'
+#' # Check convergence
+#' print(fit$converged)
+#' }
 #' @export
 spexvb.logistic <- function(
     X,
@@ -65,11 +81,11 @@ spexvb.logistic <- function(
     tol = tol
   )
 
-  required_loop <- F
+  required_loop <- FALSE
   P_tau_alpha <- tau_alpha
   while(
     (
-      cpp_results$converged == F |
+      cpp_results$converged == FALSE |
       abs(cpp_results$alpha - 1) > 0.1 |
       is.na(cpp_results$alpha) |
       is.na(sum(cpp_results$mu)) |
@@ -78,10 +94,9 @@ spexvb.logistic <- function(
       is.na(sum(cpp_results$d_pi))
     ) & P_tau_alpha < 1e+6
     ){
-    cat("Running again.")
-    cat(P_tau_alpha)
+    message("Running again. P_tau_alpha: ", P_tau_alpha)
 
-    required_loop <- T
+    required_loop <- TRUE
     P_tau_alpha <- P_tau_alpha*10
     cpp_results <- fit_logistic_alpha_remap(
       X = X_full,

@@ -67,8 +67,11 @@ This function acts as a wrapper for the C++ implementation of the variational Ba
 with a hierarchical Gamma prior on the slab precision, \eqn{\tau_b}.
 }
 \examples{
-\dontrun{
-# Example usage (assuming X and Y are defined)
-# result <- hspvb(X = my_X, Y = my_Y)
+\donttest{
+n <- 50
+p <- 100
+X <- matrix(rnorm(n * p), n, p)
+Y <- X[,1] * 2 + rnorm(n)
+result <- hspvb(X = X, Y = Y)
 }
 }

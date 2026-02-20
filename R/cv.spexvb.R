@@ -30,6 +30,20 @@
 #'   the model on training folds, and evaluates performance on the held-out test fold.
 #'   To leverage parallel processing, ensure a parallel backend (e.g., from `doParallel` or `doSNOW` packages)
 #'   is registered using `registerDoParallel()` or similar before calling this function.
+#' @examples
+#' \donttest{
+#' n <- 50
+#' p <- 100
+#' X <- matrix(rnorm(n * p), n, p)
+#' Y <- X[,1] * 2 + rnorm(n)
+#'
+#' # Run cross-validation only (returns errors and optimal tau_alpha)
+#' cv_res <- cv.spexvb(k = 3, X = X, Y = Y)
+#'
+#' # Inspect the optimal tau_alpha
+#' print(cv_res$tau_alpha_opt)
+#' }
+#'
 #' @importFrom caret createFolds
 #' @importFrom foreach foreach %do% %dopar%
 #' @importFrom stats sd
@@ -48,8 +62,8 @@ cv.spexvb <- function(
     mu_alpha = 1, # alpha is N(mu_alpha, (tau_e*tau_alphalpha)^{-1}), known/estimated
     tau_alpha = c(0,10^(3:7)), # Can be a vector now
     tau_b = 400, # initial. b_j is N(0, (tau_e*tau_b)^{-1}), known/estimated
-    standardize = T, # Center Y, and center and scale X
-    intercept = T,
+    standardize = TRUE, # Center Y, and center and scale X
+    intercept = TRUE,
     max_iter = 100L, # Ensure it's an integer literal
     tol = 1e-5,
     seed = 12376, # seed for cv.glmnet initials

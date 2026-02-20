@@ -16,6 +16,18 @@
 #' @param update_order Initial update order.
 #' @param seed Seed for reproducibility.
 #' @return A list of initialized parameters.
+#' @examples
+#' \donttest{
+#' n <- 50
+#' p <- 100
+#' X <- matrix(rnorm(n * p), n, p)
+#' Y <- X[,1] * 2 + rnorm(n)
+#'
+#' initials <- get.initials(X, Y)
+#'
+#' # Check estimated noise precision (tau_e)
+#' print(initials$tau_e)
+#' }
 #' @importFrom glmnet cv.glmnet
 #' @importFrom stats predict coef
 #' @export
@@ -50,10 +62,10 @@ get.initials <- function(
       Y,
       alpha = 1, # lasso
       family = "gaussian",
-      standardize = F,
+      standardize = FALSE,
       standardize.response = FALSE,
-      intercept = F,
-      parallel = T
+      intercept = FALSE,
+      parallel = TRUE
     )
 
     nz_ind_lambda.min <- predict(
@@ -108,11 +120,11 @@ get.initials <- function(
       X,
       Y,
       family = "gaussian",
-      standardize = F,
+      standardize = FALSE,
       standardize.response = FALSE,
-      intercept = F,
+      intercept = FALSE,
       alpha = 0, # Ridge regression (alpha=0)
-      parallel = T
+      parallel = TRUE
     )
 
     mu_0 = as.numeric(coef(ridge_cv, s = "lambda.min"))

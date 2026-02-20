@@ -17,8 +17,8 @@ cv.spexvb(
   mu_alpha = 1,
   tau_alpha = c(0, 10^(3:7)),
   tau_b = 400,
-  standardize = T,
-  intercept = T,
+  standardize = TRUE,
+  intercept = TRUE,
   max_iter = 100L,
   tol = 1e-05,
   seed = 12376,
@@ -82,4 +82,19 @@ for the \code{spexvb} model. It iterates through different \code{tau_alpha} valu
 the model on training folds, and evaluates performance on the held-out test fold.
 To leverage parallel processing, ensure a parallel backend (e.g., from \code{doParallel} or \code{doSNOW} packages)
 is registered using \code{registerDoParallel()} or similar before calling this function.
+}
+\examples{
+\donttest{
+n <- 50
+p <- 100
+X <- matrix(rnorm(n * p), n, p)
+Y <- X[,1] * 2 + rnorm(n)
+
+# Run cross-validation only (returns errors and optimal tau_alpha)
+cv_res <- cv.spexvb(k = 3, X = X, Y = Y)
+
+# Inspect the optimal tau_alpha
+print(cv_res$tau_alpha_opt)
+}
+
 }

@@ -17,8 +17,8 @@ cv.spexvb.fit(
   mu_alpha = 1,
   tau_alpha = c(0, 10^(3:7)),
   tau_b = 400,
-  standardize = T,
-  intercept = T,
+  standardize = TRUE,
+  intercept = TRUE,
   max_iter = 100L,
   tol = 1e-05,
   seed = 12376,
@@ -88,6 +88,19 @@ This function orchestrates the cross-validation process and the final model fit.
 It first gets initial values for the full dataset, then uses \code{cv.spexvb} to find
 the \code{tau_alpha} that minimizes cross-validation error, and finally calls \code{spexvb}
 on the complete dataset with the chosen \code{tau_alpha}.
+}
+\examples{
+\donttest{
+# Generate simple synthetic data
+n <- 50
+p <- 100
+X <- matrix(rnorm(n * p), n, p)
+Y <- X[,1] * 2 + rnorm(n)
+
+# Run cross-validation and fit final model
+# (Setting k=3 to keep it quick for the example)
+fit <- cv.spexvb.fit(k = 3, X = X, Y = Y)
+}
 }
 \seealso{
 \code{\link{cv.spexvb}}, \code{\link{spexvb}}
