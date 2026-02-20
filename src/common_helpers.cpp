@@ -26,12 +26,7 @@ double sigmoid(const double &x) {
 }
 
 arma::vec gram_diag(const arma::mat &X) {
-  arma::vec diag(X.n_cols);
-
-  for (arma::uword i = 0; i < diag.n_elem; ++i) {
-    diag(i) = std::pow(arma::norm(X.col(i)), 2);
-  }
-  return diag;
+  return arma::sum(arma::square(X), 0).t();
 }
 
 // // Function to calculate the digamma function using R's digamma

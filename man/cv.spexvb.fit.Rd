@@ -2,7 +2,7 @@
 % Please edit documentation in R/cv.spexvb.fit.R
 \name{cv.spexvb.fit}
 \alias{cv.spexvb.fit}
-\title{Cross-validation and Final Model Fitting for SPEVXB}
+\title{Cross-validation and Final Model Fitting for SPEXVB}
 \usage{
 cv.spexvb.fit(
   k = 5,
@@ -34,26 +34,26 @@ cv.spexvb.fit(
 \item{Y}{A response vector.}
 
 \item{mu_0}{Initial variational mean (posterior expectation of beta_j | s_j = 1).
-If NULL, initialized automatically by \code{get.initials}.}
+If NULL, initialized automatically by `get.initials`.}
 
 \item{omega_0}{Initial variational probability (posterior expectation of s_j).
-If NULL, initialized automatically by \code{get.initials}.}
+If NULL, initialized automatically by `get.initials`.}
 
 \item{c_pi_0}{Prior parameter for pi (beta distribution shape1).
-If NULL, initialized automatically by \code{get.initials}.}
+If NULL, initialized automatically by `get.initials`.}
 
 \item{d_pi_0}{Prior parameter for pi (beta distribution shape2).
-If NULL, initialized automatically by \code{get.initials}.}
+If NULL, initialized automatically by `get.initials`.}
 
 \item{tau_e}{Initial precision of errors.
-If NULL, initialized automatically by \code{get.initials}.}
+If NULL, initialized automatically by `get.initials`.}
 
 \item{update_order}{A numeric vector specifying the order of updates for coefficients.
-If NULL, initialized automatically by \code{get.initials}.}
+If NULL, initialized automatically by `get.initials`.}
 
 \item{mu_alpha}{Mean for the prior on alpha (expansion parameter).}
 
-\item{tau_alpha}{A numeric vector of \code{tau_alpha} values to cross-validate over.
+\item{tau_alpha}{A numeric vector of `tau_alpha` values to cross-validate over.
 Must have at least two values.}
 
 \item{tau_b}{Initial precision for beta_j (when s_j = 1).}
@@ -66,28 +66,28 @@ Must have at least two values.}
 
 \item{tol}{Convergence tolerance for both CV fits and the final fit.}
 
-\item{seed}{Seed for reproducibility of data splitting and \code{glmnet} initials.}
+\item{seed}{Seed for reproducibility of data splitting and `glmnet` initials.}
 
 \item{verbose}{Logical, if TRUE, prints progress messages during cross-validation.}
 
 \item{parallel}{Logical, if TRUE, search in parallel.}
 }
 \value{
-The final fitted \code{spexvb} model, which is a list containing the approximate
-posterior parameters and convergence information for the full dataset using the
-optimal \code{tau_alpha} determined by cross-validation.
+The final fitted `spexvb` model, which is a list containing the approximate
+  posterior parameters and convergence information for the full dataset using the
+  optimal `tau_alpha` determined by cross-validation.
 }
 \description{
 This function performs k-fold cross-validation to determine the optimal
-\code{tau_alpha} parameter for the \code{spexvb} model, and then fits a final \code{spexvb} model
-to the full dataset using this optimal \code{tau_alpha}. Initial values for the final
-model are also derived from the full dataset.
+  `tau_alpha` parameter for the `spexvb` model, and then fits a final `spexvb` model
+  to the full dataset using this optimal `tau_alpha`. Initial values for the final
+  model are also derived from the full dataset.
 }
 \details{
 This function orchestrates the cross-validation process and the final model fit.
-It first gets initial values for the full dataset, then uses \code{cv.spexvb} to find
-the \code{tau_alpha} that minimizes cross-validation error, and finally calls \code{spexvb}
-on the complete dataset with the chosen \code{tau_alpha}.
+  It first gets initial values for the full dataset, then uses `cv.spexvb` to find
+  the `tau_alpha` that minimizes cross-validation error, and finally calls `spexvb`
+  on the complete dataset with the chosen `tau_alpha`.
 }
 \examples{
 \donttest{

@@ -1,4 +1,4 @@
-#' @title Cross-validation for Sparse Paramaeter Expanded Variational Bayes (spexvb)
+#' @title Cross-validation for Sparse Parameter Expanded Variational Bayes (spexvb)
 #' @description Performs k-fold cross-validation for the spexvb model,
 #'   allowing for evaluation of model performance across different tau_alpha values.
 #' @param k Integer, the number of folds for cross-validation. Must be greater than 2.
@@ -116,10 +116,7 @@ cv.spexvb <- function(
   ordered_tau_alpha <- sort(tau_alpha, decreasing = FALSE) # Changed to FALSE
 
   ## Folds creation for k-fold Cross Validation ----
-  data <- data.frame(X = X, Y = Y) # Create data.frame from X and Y
-
-  # Create indices for k-fold cross-validation
-  folds <- caret::createFolds(data$Y, k = k, list = TRUE)
+  folds <- caret::createFolds(Y, k = k, list = TRUE)
 
   # Use %dopar% for parallel execution if a backend is registered
   i <- current_tau_alpha <- NULL # For CRAN
@@ -131,16 +128,38 @@ cv.spexvb <- function(
     train_indices <- unlist(folds[-i])
     test_indices <- unlist(folds[i])
 
-    # Ensure data is matrix/vector for spexvb and C++
-    X_train = as.matrix(data[train_indices, -ncol(data)]) # design matrix
-    Y_train = as.vector(data[train_indices, ncol(data)]) # response vector
+    X_train <- X[train_indices, , drop = FALSE]
+    Y_train <- Y[train_indices]
+    X_test <- X[test_indices, , drop = FALSE]
+    Y_test <- Y[test_indices]
 
-    X_test = as.matrix(data[test_indices, -ncol(data)]) # design matrix
-    Y_test = as.vector(data[test_indices, ncol(data)]) # response vector
+    # Precompute initials once per fold to avoid redundant cv.glmnet calls
+    # across the tau_alpha grid. spexvb() standardizes internally before
+    # calling get.initials(), so we mirror that standardization here.
+    do_std <- standardize || intercept
+    if (do_std) {
+      fold_means <- colMeans(X_train)
+      X_c <- scale(X_train, center = fold_means, scale = FALSE)
+      fold_sds <- sqrt(colMeans(X_c^2))
+      X_init <- scale(X_c, center = FALSE, scale = fold_sds)
+      Y_init <- Y_train - mean(Y_train)
+    } else {
+      X_init <- X_train
+      Y_init <- Y_train
+    }
 
-    # Train the model on the training set
-    # --- MODIFIED PARALLEL LOGIC ---
-    # Define the loop operator based on the 'parallel' argument
+    fold_initials <- get.initials(
+      X = X_init,
+      Y = Y_init,
+      mu_0 = mu_0,
+      omega_0 = omega_0,
+      c_pi_0 = c_pi_0,
+      d_pi_0 = d_pi_0,
+      tau_e = tau_e,
+      update_order = update_order,
+      seed = seed
+    )
+
     `%loop_op%` <- if (parallel) foreach::`%dopar%` else foreach::`%do%`
 
     if (verbose) {
@@ -148,51 +167,47 @@ cv.spexvb <- function(
                       length(tau_alpha), parallel))
     }
     fold_mses <- foreach(
-      current_tau_alpha = ordered_tau_alpha, # Renamed to avoid conflict with outer parameter
-      .combine = 'c' # Combine into a vector for this fold
-    ) %loop_op% { # Changed from %do% to %dopar%
+      current_tau_alpha = ordered_tau_alpha,
+      .combine = 'c'
+    ) %loop_op% {
       if (verbose) {
-        message(paste("Fold:", i, "tau_alpha:", current_tau_alpha)) # Use message for package
+        message(paste("Fold:", i, "tau_alpha:", current_tau_alpha))
       }
 
       fit_spexvb <- spexvb(
-        X = X_train, # design matrix
-        Y = Y_train, # response vector
-        mu_0 = mu_0, # Pass initial mu, omega if provided
-        omega_0 = omega_0,
-        c_pi_0 = c_pi_0,
-        d_pi_0 = d_pi_0,
+        X = X_train,
+        Y = Y_train,
+        mu_0 = fold_initials$mu_0,
+        omega_0 = fold_initials$omega_0,
+        c_pi_0 = fold_initials$c_pi_0,
+        d_pi_0 = fold_initials$d_pi_0,
         mu_alpha = mu_alpha,
-        tau_alpha = current_tau_alpha, # Use the current tau_alpha from iteration
+        tau_alpha = current_tau_alpha,
         tau_b = tau_b,
         standardize = standardize,
         intercept = intercept,
-        tau_e = tau_e,
-        update_order = update_order,
+        tau_e = fold_initials$tau_e,
+        update_order = fold_initials$update_order,
         max_iter = max_iter,
         tol = tol,
-        seed = seed # Pass seed for reproducibility of internal initializations
+        seed = seed
       )
 
-      # betas and prediction
       if (is.null(fit_spexvb) || is.null(fit_spexvb$mu) || is.null(fit_spexvb$omega)) {
-        # If fit failed or returned NULL/incomplete results, return NA for MSE
         if (verbose) {
           message(paste("Warning: spexvb fit failed or returned incomplete results for Fold:", i, ", tau_alpha:", current_tau_alpha))
         }
         NA_real_
       } else {
-
         y_pred <- if (intercept) {
-          # Explicitly add intercept if it was included in the model
-          cbind(1,X_test) %*% fit_spexvb$beta
+          cbind(1, X_test) %*% fit_spexvb$beta
         } else {
           X_test %*% fit_spexvb$beta
         }
         mean((Y_test - y_pred)^2)
       }
     }
-    names(fold_mses) <- as.character(ordered_tau_alpha) # Name columns by tau_alpha
+    names(fold_mses) <- as.character(ordered_tau_alpha)
     fold_mses
   } # End of outer foreach
 

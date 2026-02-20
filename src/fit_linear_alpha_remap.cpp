@@ -1,7 +1,6 @@
 // [[Rcpp::depends(RcppArmadillo)]]
 
 #include <RcppArmadillo.h>
-#include <Rcpp.h> // Explicitly include Rcpp.h
 #include <cmath>  // For std::sqrt, std::log, std::abs
 
 #include "common_helpers.h" // Include your new general helpers header
@@ -24,15 +23,14 @@ Rcpp::List fit_linear_alpha_remap(
 ) {
 
   // dimensions
-  double n = X.n_rows;
-  double p = X.n_cols;
+  arma::uword n = X.n_rows;
+  arma::uword p = X.n_cols;
 
   // initialize entropy loss function
   arma::vec old_entr = entropy(omega);
 
   // pre-process update parameters
   arma::rowvec YX_vec = Y.t() * X;
-  arma::mat XtX = X.t() * X; // Precompute X^t X
   arma::vec half_diag = gram_diag(X);
   arma::vec approx_mean = omega % mu;
   arma::vec W = X * approx_mean;
@@ -62,6 +60,7 @@ Rcpp::List fit_linear_alpha_remap(
 
   size_t t = 0;
   for (t = 0; t < max_iter; ++t) {
+    Rcpp::checkUserInterrupt();
 
     // step 1: q_j (θ_j) are updated sequentially
     // This step results in (µj, σ2j) for all j,
@@ -69,8 +68,6 @@ Rcpp::List fit_linear_alpha_remap(
 
     // coordinate update loop (inner loop)
     for (arma::uword k = 0; k < mu.n_elem; ++k) {
-      Rcpp::checkUserInterrupt();
-
       arma::uword j = update_order(k);
 
       W -= approx_mean(j) * X.col(j);
@@ -85,16 +82,14 @@ Rcpp::List fit_linear_alpha_remap(
           0.5 * std::pow(mu(j) / (sigma(j)), 2)
       );
 
-
-      // update q(π)
-      double M = arma::sum(omega);
-      a_pi = c_pi + M;
-      b_pi = d_pi + p - M;
-
       approx_mean(j) = omega(j) * mu(j);
       W += approx_mean(j) * X.col(j);
     }
 
+    // update q(π) once after coordinate sweep
+    double M = arma::sum(omega);
+    a_pi = c_pi + M;
+    b_pi = d_pi + p - M;
 
     // step 2: find α(t+1)
     // Calibration step

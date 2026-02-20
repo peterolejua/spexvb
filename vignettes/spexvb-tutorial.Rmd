@@ -19,7 +19,7 @@ library(spexvb)
 ```
 
 # spexvb
-This is a package to performParameter Expanded Variational Bayes for Linear Regression
+This is a package to perform Parameter Expanded Variational Bayes for Linear Regression
 with High-dimensional Variable Selection and Spike-and-slab
 Priors
 
@@ -34,7 +34,6 @@ install.packages("spexvb")
 Here is an example for conducting analysis using spexvb: 
 
 ```{r example}
-library(spexvb)
 library(doParallel)
 cl <- makeCluster(min(2, parallel::detectCores())) 
 registerDoParallel( cl)

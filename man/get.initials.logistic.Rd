@@ -42,8 +42,8 @@ This function initializes parameters for the spexvb model.
 Generate Initial Values for Variational Inference in Sparse Logistic Regression
 
 This helper function estimates initial values for variational parameters such as
-regression coefficients (\code{mu}), spike probabilities (\code{omega}), and hyperparameters
-like  \code{c_pi}, and \code{d_pi} using LASSO regression.
+regression coefficients (`mu`), spike probabilities (`omega`), and hyperparameters
+like  `c_pi`, and `d_pi` using LASSO regression.
 }
 \examples{
 \donttest{

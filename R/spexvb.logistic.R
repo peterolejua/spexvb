@@ -54,14 +54,14 @@ spexvb.logistic <- function(
   # Initialize parameters using helper, if not null returns the same
 
   initials <- get.initials.logistic(
-    X, # design matrix (1, X)
-    Y, # response vector
-    mu_0 = NULL, # Variational Normal mean estimated beta coefficient from lasso, posterior expectation of bj|sj = 1
-    omega_0 = NULL, # Variational probability, expectation that the coefficient from lasso is not zero, the posterior expectation of sj
-    c_pi_0 = NULL, # π ∼ Beta(aπ, bπ), known/estimated
-    d_pi_0 = NULL, # π ∼ Beta(aπ, bπ), known/estimated
-    update_order = NULL,
-    seed = 12376 # seed for cv
+    X,
+    Y,
+    mu_0 = mu_0,
+    omega_0 = omega_0,
+    c_pi_0 = c_pi_0,
+    d_pi_0 = d_pi_0,
+    update_order = update_order,
+    seed = 12376
   )
 
   # Initial call to C++
@@ -85,14 +85,14 @@ spexvb.logistic <- function(
   P_tau_alpha <- tau_alpha
   while(
     (
-      cpp_results$converged == FALSE |
-      abs(cpp_results$alpha - 1) > 0.1 |
-      is.na(cpp_results$alpha) |
-      is.na(sum(cpp_results$mu)) |
-      is.na(sum(cpp_results$omega)) |
-      is.na(sum(cpp_results$c_pi)) |
+      !cpp_results$converged ||
+      abs(cpp_results$alpha - 1) > 0.1 ||
+      is.na(cpp_results$alpha) ||
+      is.na(sum(cpp_results$mu)) ||
+      is.na(sum(cpp_results$omega)) ||
+      is.na(sum(cpp_results$c_pi)) ||
       is.na(sum(cpp_results$d_pi))
-    ) & P_tau_alpha < 1e+6
+    ) && P_tau_alpha < 1e+6
     ){
     message("Running again. P_tau_alpha: ", P_tau_alpha)
 

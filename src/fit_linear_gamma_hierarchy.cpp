@@ -1,7 +1,6 @@
 // [[Rcpp::depends(RcppArmadillo)]]
 
 #include <RcppArmadillo.h>
-#include <Rcpp.h> // Explicitly include Rcpp.h
 #include <cmath>  // For std::sqrt, std::log, std::abs
 
 #include "common_helpers.h" // Assuming this exists as in your previous files
@@ -23,7 +22,7 @@ Rcpp::List fit_linear_gamma_hierarchy(
 ) {
 
   // dimensions
-  double p = X.n_cols;
+  arma::uword p = X.n_cols;
 
   // initialize entropy loss function for convergence check
   arma::vec old_entr = entropy(omega);
@@ -53,12 +52,12 @@ Rcpp::List fit_linear_gamma_hierarchy(
 
   // Main Variational Bayes Loop
   for (t = 0; t < max_iter; ++t) {
+    Rcpp::checkUserInterrupt();
 
     // --- Step 1: Coordinate Ascent for Coefficients (q_j) ---
     // Updates mu, sigma, and omega for each predictor
 
     for (arma::uword k = 0; k < p; ++k) {
-      Rcpp::checkUserInterrupt();
       arma::uword j = update_order(k);
 
       // Remove contribution of j from residual W
@@ -81,15 +80,15 @@ Rcpp::List fit_linear_gamma_hierarchy(
           0.5 * std::pow(mu(j) / sigma(j), 2)
       );
 
-      // Update q(pi) parameters (optional if we just use expectations)
-      double M = arma::sum(omega);
-      a_pi = c_pi + M;
-      b_pi = d_pi + p - M;
-
       // Add contribution of j back to residual W
       approx_mean(j) = omega(j) * mu(j);
       W += approx_mean(j) * X.col(j);
     }
+
+    // Update q(pi) once after coordinate sweep
+    double M = arma::sum(omega);
+    a_pi = c_pi + M;
+    b_pi = d_pi + p - M;
 
     // --- Step 2: Update Hierarchical Prior (q(tau_b)) ---
     // We compute the expectation of b^2 under the current q(b, s).
@@ -98,7 +97,11 @@ Rcpp::List fit_linear_gamma_hierarchy(
     // Even though the spike is at 0 for beta, the latent b is usually modeled as coming
     // from the prior N(0, 1/tau_b).
 
-    arma::vec E_b_sq_vec = (arma::square(mu) + arma::square(sigma)) % omega  + (b_posterior_tau_b / (tau_e * (a_posterior_tau_b - 1))) * (1.0 - omega) ;
+    double prior_var_term = 0.0;
+    if (a_posterior_tau_b > 1.0) {
+      prior_var_term = b_posterior_tau_b / (tau_e * (a_posterior_tau_b - 1.0));
+    }
+    arma::vec E_b_sq_vec = (arma::square(mu) + arma::square(sigma)) % omega + prior_var_term * (1.0 - omega);
 
     double sum_E_b_sq = arma::sum(E_b_sq_vec);
 

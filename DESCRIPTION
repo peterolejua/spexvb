@@ -11,12 +11,6 @@ RoxygenNote: 7.3.3
 Imports: Rcpp, glmnet, caret, foreach
 LinkingTo: Rcpp, RcppArmadillo
 Suggests: testthat (>= 3.0.0), roxygen2, knitr, rmarkdown, doParallel
+Config/testthat/edition: 3
 VignetteBuilder: knitr
 NeedsCompilation: yes
-Packaged: 2026-02-13 04:43:53 UTC; peter
-Author: Peter Olejua [aut, cre] (ORCID:
-    <https://orcid.org/0000-0002-2478-0908>),
-  Alexander McLain [aut]
-Maintainer: Peter Olejua <polejua@email.sc.edu>
-Repository: CRAN
-Date/Publication: 2026-02-17 21:40:02 UTC

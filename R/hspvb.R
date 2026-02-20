@@ -58,7 +58,7 @@ hspvb <- function(
   p = ncol(X)
 
   # Check and handle data standardization
-  if(intercept & !standardize){
+  if(intercept && !standardize){
     warning("Setting standardize <- TRUE to calculate intercept")
     standardize <- TRUE
   }
