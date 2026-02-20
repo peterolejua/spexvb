@@ -58,7 +58,7 @@ spexvb <- function(
   p = ncol(X)
 
   #rescale data if necessary
-  if(intercept & !standardize){
+  if(intercept && !standardize){
     warning("Setting standardize <- TRUE to calculate intercept")
     standardize <- TRUE
     }

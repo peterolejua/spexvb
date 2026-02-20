@@ -1,0 +1,5 @@
+^CLAUDE\.md$
+^\.git$
+^\.Rproj\.user$
+^.*\.Rproj$
+^baseline_audit\.rds$

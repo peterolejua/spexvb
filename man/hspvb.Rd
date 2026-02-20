@@ -51,11 +51,11 @@ hspvb(
 
 \item{tol}{Convergence threshold for entropy change. Default is 1e-5.}
 
-\item{seed}{Integer seed for initialization, passed to \code{get.initials}. Default is 12376.}
+\item{seed}{Integer seed for initialization, passed to `get.initials`. Default is 12376.}
 }
 \value{
-A list with posterior summaries including estimated coefficients (\code{mu}),
-inclusion probabilities (\code{omega}), final expected slab precision (\code{tau_b}),
+A list with posterior summaries including estimated coefficients (`mu`),
+inclusion probabilities (`omega`), final expected slab precision (`tau_b`),
 intercept (if applicable), convergence status, etc.
 }
 \description{

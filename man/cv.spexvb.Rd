@@ -2,7 +2,7 @@
 % Please edit documentation in R/cv.spexvb.R
 \name{cv.spexvb}
 \alias{cv.spexvb}
-\title{Cross-validation for Sparse Paramaeter Expanded Variational Bayes (spexvb)}
+\title{Cross-validation for Sparse Parameter Expanded Variational Bayes (spexvb)}
 \usage{
 cv.spexvb(
   k = 5,
@@ -59,7 +59,7 @@ cv.spexvb(
 
 \item{tol}{Convergence tolerance for each spexvb fit.}
 
-\item{seed}{Seed for reproducibility of data splitting and \code{glmnet} initials.}
+\item{seed}{Seed for reproducibility of data splitting and `glmnet` initials.}
 
 \item{verbose}{Logical, if TRUE, prints progress messages during cross-validation.}
 
@@ -67,21 +67,21 @@ cv.spexvb(
 }
 \value{
 A list containing cross-validation results:
-\item{ordered_tau_alpha}{The sorted vector of tau_alpha values used.}
-\item{epe_test_k}{A matrix of prediction errors (MSE) for each fold (rows) and each tau_alpha (columns).}
-\item{CVE}{Cross-Validation Error (mean MSE) for each tau_alpha.}
-\item{tau_alpha_opt}{The tau_alpha value that minimizes the CVE.}
+  \item{ordered_tau_alpha}{The sorted vector of tau_alpha values used.}
+  \item{epe_test_k}{A matrix of prediction errors (MSE) for each fold (rows) and each tau_alpha (columns).}
+  \item{CVE}{Cross-Validation Error (mean MSE) for each tau_alpha.}
+  \item{tau_alpha_opt}{The tau_alpha value that minimizes the CVE.}
 }
 \description{
 Performs k-fold cross-validation for the spexvb model,
-allowing for evaluation of model performance across different tau_alpha values.
+  allowing for evaluation of model performance across different tau_alpha values.
 }
 \details{
-This function performs k-fold cross-validation to find the optimal \code{tau_alpha}
-for the \code{spexvb} model. It iterates through different \code{tau_alpha} values, trains
-the model on training folds, and evaluates performance on the held-out test fold.
-To leverage parallel processing, ensure a parallel backend (e.g., from \code{doParallel} or \code{doSNOW} packages)
-is registered using \code{registerDoParallel()} or similar before calling this function.
+This function performs k-fold cross-validation to find the optimal `tau_alpha`
+  for the `spexvb` model. It iterates through different `tau_alpha` values, trains
+  the model on training folds, and evaluates performance on the held-out test fold.
+  To leverage parallel processing, ensure a parallel backend (e.g., from `doParallel` or `doSNOW` packages)
+  is registered using `registerDoParallel()` or similar before calling this function.
 }
 \examples{
 \donttest{

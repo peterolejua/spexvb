@@ -57,8 +57,8 @@ spexvb(
 \item{seed}{Integer seed for cross-validation in glmnet. Default is 12376.}
 }
 \value{
-A list with posterior summaries including estimated coefficients (\code{mu}),
-inclusion probabilities (\code{omega}), intercept (if applicable), alpha path, convergence status, etc.
+A list with posterior summaries including estimated coefficients (`mu`),
+inclusion probabilities (`omega`), intercept (if applicable), alpha path, convergence status, etc.
 }
 \description{
 Fits a sparse linear regression model using variational inference with an alpha expansion step.

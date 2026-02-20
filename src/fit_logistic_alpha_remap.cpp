@@ -1,7 +1,6 @@
 // [[Rcpp::depends(RcppArmadillo)]]
 
 #include <RcppArmadillo.h>
-#include <Rcpp.h> // Explicitly include Rcpp.h
 #include <cmath>  // For std::sqrt, std::log, std::abs
 
 #include "common_helpers.h" // Include your new general helpers header
@@ -27,13 +26,13 @@ Rcpp::List fit_logistic_alpha_remap(
 
   // pre-process update parameters
   arma::vec approx_mean = omega % mu;
-  arma::vec sigma = 0*omega  + 1;
+  arma::vec sigma(omega.n_elem, arma::fill::ones);
   arma::vec omega_old = omega;
   arma::vec W = X * approx_mean;
   arma::mat X_2 = arma::square(X);
   arma::rowvec YX_vec = (Y - 0.5).t() * X;
   arma::vec eta(Y.n_elem, arma::fill::ones);
-  arma::vec eta_hyp = 0.25 * arma::tanh(0.5 * eta) / eta;
+  arma::vec eta_hyp = 0.25 * arma::tanh(0.5 * eta) / arma::clamp(eta, 1e-10, arma::datum::inf);
 
   double const_lodds = std::log(c_pi) - std::log(d_pi) + 0.5*std::log(tau_b);
 
@@ -48,6 +47,7 @@ Rcpp::List fit_logistic_alpha_remap(
   bool converged = false;
   size_t t = 0;
   for (t = 0; t < max_iter; ++t) {
+    Rcpp::checkUserInterrupt();
 
     // pre-processing per iteration
     arma::rowvec coef_sq = eta_hyp.t() * X_2;
@@ -60,9 +60,6 @@ Rcpp::List fit_logistic_alpha_remap(
     for (arma::uword k = 0; k < mu.n_elem; ++k) {
       // step 1: q_j (θ_j) are updated sequentially
       // This step results in (µj, σ2j, omegaj) for all j,
-
-      // check if interrupt signal was sent from R
-      Rcpp::checkUserInterrupt();
 
       // the current update dimension
       arma::uword j = update_order(k);
@@ -89,7 +86,7 @@ Rcpp::List fit_logistic_alpha_remap(
     eta = arma::sqrt(
       arma::square(X) * (omega % (arma::square(mu) + arma::square(sigma))) +
         arma::square(W) - arma::square(X) * arma::square(approx_mean));
-    eta_hyp = 0.25 * arma::tanh(0.5 * eta) / eta;
+    eta_hyp = 0.25 * arma::tanh(0.5 * eta) / arma::clamp(eta, 1e-10, arma::datum::inf);
 
     // step 2: find α(t+1)
     // Calibration step

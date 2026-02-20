@@ -45,8 +45,8 @@ spexvb.logistic(
 \item{tol}{Convergence tolerance. Default is 1e-4.}
 }
 \value{
-A list with posterior summaries including estimated coefficients (\code{mu}),
-inclusion probabilities (\code{omega}), final expected slab precision (\code{tau_b}),
+A list with posterior summaries including estimated coefficients (`mu`),
+inclusion probabilities (`omega`), final expected slab precision (`tau_b`),
 intercept (if applicable), convergence status, etc.
 }
 \description{

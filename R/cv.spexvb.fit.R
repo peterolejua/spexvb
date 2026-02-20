@@ -1,4 +1,4 @@
-#' @title Cross-validation and Final Model Fitting for SPEVXB
+#' @title Cross-validation and Final Model Fitting for SPEXVB
 #' @description This function performs k-fold cross-validation to determine the optimal
 #'   `tau_alpha` parameter for the `spexvb` model, and then fits a final `spexvb` model
 #'   to the full dataset using this optimal `tau_alpha`. Initial values for the final
@@ -75,7 +75,7 @@ cv.spexvb.fit <- function(
   set.seed(seed)
 
   # get initials for the *full* dataset
-  initials <- spexvb::get.initials(
+  initials <- get.initials(
     X = X, # design matrix
     Y = Y, # response vector
     mu_0 = mu_0, # Variational Normal mean estimated beta coefficient from lasso, posterior expectation of bj|sj = 1
@@ -88,7 +88,7 @@ cv.spexvb.fit <- function(
   )
 
   # Perform cross-validation to find optimal tau_alpha
-  cv_results <- spexvb::cv.spexvb(
+  cv_results <- cv.spexvb(
     k = k, #the number of folds to use
     X = X, # design matrix
     Y = Y, # response vector
@@ -117,7 +117,7 @@ cv.spexvb.fit <- function(
   # Fit the final model with the optimal tau_alpha on the full dataset
   # Using try() to gracefully handle potential errors during the final fit
   fit_spexvb <- try(
-    spexvb::spexvb(
+    spexvb(
       X = X, # design matrix
       Y = Y, # response vector
       mu_0 = initials$mu_0, # Use the initial values derived from the full dataset

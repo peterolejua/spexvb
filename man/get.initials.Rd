@@ -45,8 +45,8 @@ This function initializes parameters for the spexvb model.
 Generate Initial Values for Variational Inference in Sparse Regression
 
 This helper function estimates initial values for variational parameters such as
-regression coefficients (\code{mu}), spike probabilities (\code{omega}), and hyperparameters
-like \code{tau_e}, \code{c_pi}, and \code{d_pi} using LASSO and Ridge regression fits.
+regression coefficients (`mu`), spike probabilities (`omega`), and hyperparameters
+like `tau_e`, `c_pi`, and `d_pi` using LASSO and Ridge regression fits.
 }
 \examples{
 \donttest{
