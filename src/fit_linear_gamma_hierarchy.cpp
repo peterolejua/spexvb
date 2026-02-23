@@ -57,30 +57,26 @@ Rcpp::List fit_linear_gamma_hierarchy(
     // --- Step 1: Coordinate Ascent for Coefficients (q_j) ---
     // Updates mu, sigma, and omega for each predictor
 
+    sigma = 1.0 / arma::sqrt(tau_e * (half_diag + tau_b));
+    double log_odds_const = std::log(c_pi) - std::log(d_pi) + 0.5;
+    double log_scale = std::log(std::sqrt(tau_b * tau_e));
+
     for (arma::uword k = 0; k < p; ++k) {
       arma::uword j = update_order(k);
 
-      // Remove contribution of j from residual W
       W -= approx_mean(j) * X.col(j);
 
-      // Update sigma_j
-      // Note: standard VB update uses the *expectation* of tau_b.
-      // Here tau_b variable holds E[tau_b] = a_post / b_post.
-      sigma(j) = 1.0 / std::sqrt(tau_e * (half_diag(j) + tau_b));
+      double sigma_j = sigma(j);
+      double sigma_j_sq = sigma_j * sigma_j;
 
-      // Update mu_j
-      mu(j) = tau_e * std::pow(sigma(j), 2) * (YX_vec(j) - arma::dot(X.col(j), W));
+      mu(j) = tau_e * sigma_j_sq * (YX_vec(j) - arma::dot(X.col(j), W));
 
-      // Update omega_j
-      // The term log(sigma * sqrt(tau_b * tau_e)) comes from the ELBO.
-      // It represents the ratio of posterior width to prior width.
+      double mu_over_sigma = mu(j) / sigma_j;
       omega(j) = sigmoid(
-        std::log(c_pi) - std::log(d_pi) + 0.5 +
-          std::log(sigma(j) * std::sqrt(tau_b * tau_e)) +
-          0.5 * std::pow(mu(j) / sigma(j), 2)
+        log_odds_const + std::log(sigma_j) + log_scale +
+          0.5 * mu_over_sigma * mu_over_sigma
       );
 
-      // Add contribution of j back to residual W
       approx_mean(j) = omega(j) * mu(j);
       W += approx_mean(j) * X.col(j);
     }

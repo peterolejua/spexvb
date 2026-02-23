@@ -36,9 +36,6 @@ Rcpp::List fit_linear_alpha_remap(
   arma::vec W = X * approx_mean;
   arma::mat X_2 = arma::square(X);
 
-  Rcpp::NumericVector c_pi_p_out = Rcpp::NumericVector::create(c_pi);
-  Rcpp::NumericVector d_pi_p_out = Rcpp::NumericVector::create(d_pi);
-
   double a_pi = c_pi;
   double b_pi = d_pi;
 
@@ -66,20 +63,26 @@ Rcpp::List fit_linear_alpha_remap(
     // This step results in (µj, σ2j) for all j,
     // and any required expectations of π
 
+    // compute sigma and inner-loop constants once per outer iteration
+    sigma = 1.0 / arma::sqrt(tau_e * (half_diag + tau_b));
+    double log_odds_const = std::log(c_pi) - std::log(d_pi) + 0.5;
+    double log_scale = std::log(std::sqrt(tau_b * tau_e));
+
     // coordinate update loop (inner loop)
     for (arma::uword k = 0; k < mu.n_elem; ++k) {
       arma::uword j = update_order(k);
 
       W -= approx_mean(j) * X.col(j);
 
-      sigma(j) = 1 / std::sqrt(tau_e * (half_diag(j) + tau_b));
+      double sigma_j = sigma(j);
+      double sigma_j_sq = sigma_j * sigma_j;
 
-      mu(j) = tau_e*std::pow(sigma(j), 2) * (YX_vec(j) - arma::dot(X.col(j), W));
+      mu(j) = tau_e * sigma_j_sq * (YX_vec(j) - arma::dot(X.col(j), W));
 
+      double mu_over_sigma = mu(j) / sigma_j;
       omega(j) = sigmoid(
-        std::log(c_pi) - std::log(d_pi) + 0.5 +
-          std::log(sigma(j) * std::sqrt(tau_b * tau_e)) +
-          0.5 * std::pow(mu(j) / (sigma(j)), 2)
+        log_odds_const + std::log(sigma_j) + log_scale +
+          0.5 * mu_over_sigma * mu_over_sigma
       );
 
       approx_mean(j) = omega(j) * mu(j);
@@ -108,13 +111,12 @@ Rcpp::List fit_linear_alpha_remap(
 
     mu = alpha*mu;
     sigma = std::abs(alpha)*sigma;
-    tau_b = tau_b/std::pow(alpha,2);
+    tau_b = tau_b / (alpha * alpha);
     mu_alpha = 1 - (alpha - mu_alpha);
     mu_alpha_vec(t) = mu_alpha;
 
-    // redefine W
-    approx_mean = (omega % mu);
-    W = X * approx_mean;
+    approx_mean *= alpha;
+    W *= alpha;
 
 
     // test if things have gone off the rails
