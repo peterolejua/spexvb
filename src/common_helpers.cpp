@@ -5,14 +5,8 @@
 
 // Define helper functions here
 arma::vec entropy(const arma::vec &x) {
-  arma::vec ent(x.n_elem, arma::fill::zeros);
-  for (arma::uword j = 0; j < x.n_elem; ++j) {
-    // clamp values to avoid -Inf
-    if ((x(j) > 1e-10) && (x(j) < 1 - 1e-10)) {
-      ent(j) -= x(j) * std::log2(x(j)) + (1 - x(j)) * std::log2(1 - x(j));
-    }
-  }
-  return ent;
+  arma::vec xc = arma::clamp(x, 1e-10, 1.0 - 1e-10);
+  return -(xc % arma::log2(xc) + (1.0 - xc) % arma::log2(1.0 - xc));
 }
 
 double sigmoid(const double &x) {

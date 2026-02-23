@@ -65,9 +65,8 @@ hspvb <- function(
 
   if (standardize){
     X_means <- colMeans(X)
-    X_c <- scale(X, center = X_means, scale = FALSE)
-    sigma_estimate <- sqrt(colMeans(X_c^2))
-    X_cs <- scale(X_c, center = FALSE, scale = sigma_estimate)
+    sigma_estimate <- sqrt(colMeans(X^2) - X_means^2)
+    X_cs <- scale(X, center = X_means, scale = sigma_estimate)
 
     Y_mean <- mean(Y)
     Y_c <- Y - Y_mean
@@ -97,27 +96,11 @@ hspvb <- function(
   tau_e = initials$tau_e
   update_order = initials$update_order
 
-  # Match internal function call and generate list of arguments
-  arg = list(
-    X_cs,
-    Y_c,
-    mu_0,
-    omega_0,
-    c_pi_0,
-    d_pi_0,
-    a_prior_tau_b,
-    b_prior_tau_b,
-    tau_e,
-    update_order,
-    max_iter,
-    tol
+  approximate_posterior <- fit_linear_gamma_hierarchy(
+    X_cs, Y_c, mu_0, omega_0, c_pi_0, d_pi_0,
+    a_prior_tau_b, b_prior_tau_b, tau_e,
+    update_order, max_iter, tol
   )
-
-  fn <- "fit_linear_gamma_hierarchy"
-
-  # Call the C++ function
-  # NOTE: The C++ function is assumed to be available via Rcpp::sourceCpp or package loading
-  approximate_posterior = do.call(fn, arg)
 
   # Unscale solution
   if (standardize) {

@@ -58,34 +58,30 @@ Rcpp::List fit_logistic_alpha_remap(
 
     // coordinate update loop
     for (arma::uword k = 0; k < mu.n_elem; ++k) {
-      // step 1: q_j (θ_j) are updated sequentially
-      // This step results in (µj, σ2j, omegaj) for all j,
-
-      // the current update dimension
       arma::uword j = update_order(k);
 
-      // delete the j-th column from running sum
       W -= approx_mean(j) * X.col(j);
 
-      // implements equation (26) of Carbonetto et al.
-      mu(j) = std::pow(sigma(j), 2) *
+      double sigma_j = sigma(j);
+      double sigma_j_sq = sigma_j * sigma_j;
+
+      mu(j) = sigma_j_sq *
         (YX_vec(j) - 2 * arma::dot(eta_hyp % X.col(j), W));
 
-      // implements equation (27) of Carbonetto et al.
       if (j > 0) {
-        omega(j) = sigmoid(const_lodds + std::log(sigma(j)) +
-          0.5 * std::pow(mu(j) / sigma(j), 2));
+        double mu_over_sigma = mu(j) / sigma_j;
+        omega(j) = sigmoid(const_lodds + std::log(sigma_j) +
+          0.5 * mu_over_sigma * mu_over_sigma);
       }
 
-      // add j-th column with updated values
       approx_mean(j) = omega(j) * mu(j);
       W += approx_mean(j) * X.col(j);
     }
 
     // implements equation (32) of the paper
     eta = arma::sqrt(
-      arma::square(X) * (omega % (arma::square(mu) + arma::square(sigma))) +
-        arma::square(W) - arma::square(X) * arma::square(approx_mean));
+      X_2 * (omega % (arma::square(mu) + arma::square(sigma))) +
+        arma::square(W) - X_2 * arma::square(approx_mean));
     eta_hyp = 0.25 * arma::tanh(0.5 * eta) / arma::clamp(eta, 1e-10, arma::datum::inf);
 
     // step 2: find α(t+1)
@@ -103,13 +99,12 @@ Rcpp::List fit_logistic_alpha_remap(
 
     mu = alpha*mu;
     sigma = std::abs(alpha)*sigma;
-    tau_b = tau_b/std::pow(alpha,2);
+    tau_b = tau_b / (alpha * alpha);
     mu_alpha = 1 - (alpha - mu_alpha);
     mu_alpha_vec(t) = mu_alpha;
 
-    // redefine W
-    approx_mean = (omega % mu);
-    W = X * approx_mean;
+    approx_mean *= alpha;
+    W *= alpha;
 
     // check for convergence
     arma::vec new_entr = entropy(omega);

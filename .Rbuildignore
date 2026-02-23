@@ -4,3 +4,8 @@
 ^.*\.Rproj$
 ^baseline_audit\.rds$
 ^build$
+^\.claude$
+^tests/temp_benchmark\.R$
+^tests/incremental_benchmark\.R$
+^tests/baseline_.*\.rds$
+^tests/incremental_baseline\.rds$

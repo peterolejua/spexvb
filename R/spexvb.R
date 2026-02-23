@@ -65,9 +65,8 @@ spexvb <- function(
 
   if (standardize){
     X_means <- colMeans(X)
-    X_c <- scale(X, center = X_means, scale = FALSE)
-    sigma_estimate <- sqrt(colMeans(X_c^2))
-    X_cs <- scale(X_c, center = FALSE, scale = sigma_estimate)
+    sigma_estimate <- sqrt(colMeans(X^2) - X_means^2)
+    X_cs <- scale(X, center = X_means, scale = sigma_estimate)
 
     Y_mean <- mean(Y)
     Y_c <- Y - Y_mean
@@ -98,26 +97,11 @@ spexvb <- function(
   tau_e = initials$tau_e
   update_order = initials$update_order
 
-  #match internal function call and generate list of arguments
-  arg = list(
-    X_cs,
-    Y_c,
-    mu_0,
-    omega_0,
-    c_pi_0,
-    d_pi_0,
-    mu_alpha,
-    tau_alpha,
-    tau_b,
-    tau_e,
-    update_order,
-    max_iter,
-    tol
+  approximate_posterior <- fit_linear_alpha_remap(
+    X_cs, Y_c, mu_0, omega_0, c_pi_0, d_pi_0,
+    mu_alpha, tau_alpha, tau_b, tau_e,
+    update_order, max_iter, tol
   )
-
-  fn <- "fit_linear_alpha_remap"
-
-  approximate_posterior = do.call(fn, arg)
 
   # Unscale solution
   if (standardize) {
@@ -154,7 +138,6 @@ spexvb <- function(
     c_pi_p = as.numeric(approximate_posterior$c_pi_p),
     d_pi_0 = d_pi_0,
     d_pi_p = as.numeric(approximate_posterior$d_pi_p),
-    approximate_posterior = lapply(approximate_posterior, as.numeric),
     alpha_vec = as.numeric(approximate_posterior$alpha_vec),
     alpha = as.numeric(approximate_posterior$alpha_vec[approximate_posterior$iterations]),
     iterations = as.numeric(approximate_posterior$iterations),
