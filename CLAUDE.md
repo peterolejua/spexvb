@@ -46,12 +46,20 @@ devtools::check()             # full CRAN check
 
 There is currently **no test suite** (`tests/` does not exist). When adding tests, create `tests/testthat/` and mirror source file names (e.g., `R/spexvb.R` → `tests/testthat/test-spexvb.R`).
 
-## Optimization Notes (current branch: `optimize`)
+## Optimization Notes
 
-- `src/Makevars` currently only sets `PKG_LIBS`. Adding `PKG_CXXFLAGS = -O2` would enable compiler optimization (do not use `-march=native`).
-- In `fit_linear_alpha_remap.cpp`, `XtX = X.t() * X` is precomputed but not used in the inner loop — the inner loop recomputes column dot products via `arma::dot(X.col(j), W)`. This is a known optimization opportunity.
 - `gram_diag(X)` (squared column norms) is precomputed once before the outer loop — preserve this.
+- Iteration-constant computations are hoisted out of inner loops — preserve this structure when modifying C++ backends.
 - Follow the Safe Optimization Protocol from global CLAUDE.md before changing any numerical code: benchmark first, verify `all.equal(..., tolerance = 1e-8)`, check iteration count has not increased.
+
+## Versioning
+
+- CRAN releases use `<major>.<minor>.<patch>` (e.g., `0.1.0`).
+- Dev versions append `.9000` immediately after a CRAN release (e.g., `0.1.0.9000`).
+- Git tags use a `v` prefix (e.g., `v0.1.0`, `v0.1.0.9000`).
+- The `.9000` suffix stays fixed during development (do not increment to `.9001`) unless distinguishing between multiple dev snapshots is needed.
+- The next CRAN submission bumps to the next release number (e.g., `0.2.0`) and removes the `.9000` suffix.
+- Record user-visible changes in `NEWS.md` under the dev version heading.
 
 ## Parallel CV
 
